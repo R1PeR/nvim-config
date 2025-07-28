@@ -470,6 +470,12 @@ require('lazy').setup {
             signature = { enabled = true },
         },
     },
+    {
+        'stevearc/oil.nvim',
+        config = function()
+            require("oil").setup()
+        end,
+    },
 }
 
 vim.api.nvim_create_autocmd('User', {
@@ -688,3 +694,7 @@ vim.o.expandtab = true
 
 --custom commmands
 vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>', { desc = '[T]erminal' })
+
+--oil.nvim
+
+vim.keymap.set('n', '<leader>e', ':Oil<cr>', { desc = '[E]xplorer' })
