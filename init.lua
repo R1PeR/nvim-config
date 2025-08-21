@@ -495,8 +495,11 @@ require('lazy').setup {
         -- setting the keybinding for LazyGit with 'keys' is recommended in
         -- order to load the plugin when the command is run for the first time
         keys = {
-            { '<leader>g', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+            { '<leader>g', '<cmd>LazyGit<cr>', desc = 'Lazy[G]it' },
         },
+    },
+    {
+        'pogyomo/winresize.nvim',
     },
 }
 
@@ -661,10 +664,10 @@ vim.keymap.set('v', '<m-down>', '<m-j>')
 vim.keymap.set('v', '<m-up>', '<m-k>')
 
 --delete shift + arrows
-vim.keymap.set('n', '<s-left>', '')
-vim.keymap.set('n', '<s-right>', '')
-vim.keymap.set('n', '<s-down>', '')
-vim.keymap.set('n', '<s-up>', '')
+-- vim.keymap.set('n', '<s-left>', '')
+-- vim.keymap.set('n', '<s-right>', '')
+-- vim.keymap.set('n', '<s-down>', '')
+-- vim.keymap.set('n', '<s-up>', '')
 vim.keymap.set('v', '<s-left>', '')
 vim.keymap.set('v', '<s-right>', '')
 vim.keymap.set('v', '<s-down>', '')
@@ -719,3 +722,14 @@ vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>', { desc =
 
 --oil.nvim
 vim.keymap.set('n', '<leader>e', ':Oil<cr>', { desc = '[E]xplorer' })
+
+--resize windows
+local resize = function(win, amt, dir)
+    return function()
+        require('winresize').resize(win, amt, dir)
+    end
+end
+vim.keymap.set('n', '<S-Left>', resize(0, 2, 'left'))
+vim.keymap.set('n', '<S-Down>', resize(0, 2, 'down'))
+vim.keymap.set('n', '<S-Up>', resize(0, 2, 'up'))
+vim.keymap.set('n', '<S-Right>', resize(0, 2, 'right'))
