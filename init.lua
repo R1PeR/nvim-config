@@ -475,8 +475,28 @@ require('lazy').setup {
     {
         'stevearc/oil.nvim',
         config = function()
-            require("oil").setup()
+            require('oil').setup()
         end,
+    },
+    {
+        'kdheepak/lazygit.nvim',
+        lazy = true,
+        cmd = {
+            'LazyGit',
+            'LazyGitConfig',
+            'LazyGitCurrentFile',
+            'LazyGitFilter',
+            'LazyGitFilterCurrentFile',
+        },
+        -- optional for floating window border decoration
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+        },
+        -- setting the keybinding for LazyGit with 'keys' is recommended in
+        -- order to load the plugin when the command is run for the first time
+        keys = {
+            { '<leader>g', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+        },
     },
 }
 
@@ -698,5 +718,4 @@ vim.o.expandtab = true
 vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>', { desc = '[T]erminal' })
 
 --oil.nvim
-
 vim.keymap.set('n', '<leader>e', ':Oil<cr>', { desc = '[E]xplorer' })
