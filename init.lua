@@ -175,13 +175,13 @@ require('lazy').setup {
 
             -- Document existing key chains
             spec = {
-                { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
-                { '<leader>d', group = '[D]ocument' },
-                { '<leader>r', group = '[R]ename' },
+                -- { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+                -- { '<leader>d', group = '[D]ocument' },
+                -- { '<leader>r', group = '[R]ename' },
                 { '<leader>s', group = '[S]earch' },
-                { '<leader>w', group = '[W]orkspace' },
-                { '<leader>t', group = '[T]oggle' },
-                { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+                -- { '<leader>w', group = '[W]orkspace' },
+                -- { '<leader>t', group = '[T]oggle' },
+                -- { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
             },
         },
     },
@@ -382,7 +382,7 @@ require('lazy').setup {
                     require('conform').format { async = true, lsp_format = 'fallback' }
                 end,
                 mode = '',
-                desc = '[f]ormat buffer',
+                desc = '[F]ormat buffer',
             },
         },
         opts = {
@@ -475,28 +475,12 @@ require('lazy').setup {
     {
         'stevearc/oil.nvim',
         config = function()
-            require('oil').setup()
+            require('oil').setup {
+                view_options = {
+                    show_hidden = true,
+                },
+            }
         end,
-    },
-    {
-        'kdheepak/lazygit.nvim',
-        lazy = true,
-        cmd = {
-            'LazyGit',
-            'LazyGitConfig',
-            'LazyGitCurrentFile',
-            'LazyGitFilter',
-            'LazyGitFilterCurrentFile',
-        },
-        -- optional for floating window border decoration
-        dependencies = {
-            'nvim-lua/plenary.nvim',
-        },
-        -- setting the keybinding for LazyGit with 'keys' is recommended in
-        -- order to load the plugin when the command is run for the first time
-        keys = {
-            { '<leader>g', '<cmd>LazyGit<cr>', desc = 'Lazy[G]it' },
-        },
     },
     {
         'pogyomo/winresize.nvim',
@@ -710,7 +694,7 @@ vim.keymap.set('n', '<c-w>tc', ':tabclose<cr>')
 vim.o.shell = 'bash'
 vim.o.shellcmdflag = '-c'
 vim.o.shellslash = true
-vim.o.shellxquote = '('
+vim.o.shellxquote = ''
 
 vim.o.tabstop = 4
 vim.o.softtabstop = 4
@@ -719,6 +703,8 @@ vim.o.expandtab = true
 
 --custom commmands
 vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>', { desc = '[T]erminal' })
+--lazygit?
+vim.keymap.set('n', '<leader>g', ':term<cr>ilazygit<cr>', { desc = 'Lazy[G]it' })
 
 --oil.nvim
 vim.keymap.set('n', '<leader>e', ':Oil<cr>', { desc = '[E]xplorer' })
