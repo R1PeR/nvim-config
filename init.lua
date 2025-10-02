@@ -594,4 +594,4 @@ vim.keymap.set('n', '<leader>sf', ':FzfLua files<cr>', { desc = '[S]earch [F]ile
 vim.keymap.set('n', '<leader>sg', ':FzfLua live_grep<cr>', { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader><leader>', ':FzfLua buffers<cr>', { desc = '[S]earch [B]uffers' })
 vim.keymap.set('n', '<leader>sh', ':FzfLua helptags<cr>', { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<leader>sd', ':FzfLua diagnostics<cr>', { desc = '[S]earch [D]iagnostics' })
+vim.keymap.set('n', '<leader>sd', ':FzfLua diagnostics_document<cr>', { desc = '[S]earch [D]iagnostics' })
