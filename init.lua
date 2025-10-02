@@ -373,7 +373,7 @@ require('lazy').setup {
         dependencies = { 'nvim-tree/nvim-web-devicons' },
         config = function()
             require('fzf-lua').setup {
-                { 'telescope' },
+                { 'fzf-native' },
                 winopts = {
                     height = 0.4,
                     width = 1,
@@ -382,7 +382,9 @@ require('lazy').setup {
                     border = 'border-top',
                     backdrop = 100,
                     preview = {
+                        delay = 0,
                         border = 'border-top',
+                        default = 'builtin',
                     },
                 },
             }
