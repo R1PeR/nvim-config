@@ -583,6 +583,9 @@ vim.keymap.set('n', '<S-Right>', resize(0, 2, 'right'))
 --lsp keymaps
 vim.keymap.set('n', 'grn', vim.lsp.buf.rename, { desc = '[R]e[n]ame' })
 vim.keymap.set('n', 'gra', vim.lsp.buf.code_action, { desc = '[G]oto Code [A]ction' })
+vim.keymap.set('n', 'grd', vim.lsp.buf.definition, { desc = '[G]oto Code [D]efinition' })
+vim.keymap.set('n', 'gri', vim.lsp.buf.implementation, { desc = '[G]oto Code [I]mplementation' })
+vim.keymap.set('n', 'grr', vim.lsp.buf.references, { desc = '[G]oto Code [R]eferences' })
 
 --fzf keymaps
 vim.keymap.set('n', '<leader>sf', ':FzfLua files<cr>', { desc = '[S]earch [F]iles' })
