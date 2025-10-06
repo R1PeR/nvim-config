@@ -7,6 +7,7 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 vim.g.netrw_liststyle = 3
+vim.g.netrw_banner = 0
 -- Make line numbers default
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
@@ -74,8 +75,6 @@ vim.opt.grepformat = '%f:%l:%c:%m'
 -- [[ Basic Keymaps ]]
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -108,62 +107,6 @@ require('lazy').setup {
                 delete = { text = '_' },
                 topdelete = { text = '‾' },
                 changedelete = { text = '~' },
-            },
-        },
-    },
-    { -- Useful plugin to show you pending keybinds.
-        'folke/which-key.nvim',
-        event = 'VimEnter', -- Sets the loading event to 'VimEnter'
-        opts = {
-            -- delay between pressing a key and opening which-key (milliseconds)
-            -- this setting is independent of vim.opt.timeoutlen
-            delay = 0,
-            icons = {
-                -- set icon mappings to true if you have a Nerd Font
-                mappings = vim.g.have_nerd_font,
-                -- If you are using a Nerd Font: set icons.keys to an empty table which will use the
-                -- default which-key.nvim defined Nerd Font icons, otherwise define a string table
-                keys = vim.g.have_nerd_font and {} or {
-                    Up = '<Up> ',
-                    Down = '<Down> ',
-                    Left = '<Left> ',
-                    Right = '<Right> ',
-                    C = '<C-…> ',
-                    M = '<M-…> ',
-                    D = '<D-…> ',
-                    S = '<S-…> ',
-                    CR = '<CR> ',
-                    Esc = '<Esc> ',
-                    ScrollWheelDown = '<ScrollWheelDown> ',
-                    ScrollWheelUp = '<ScrollWheelUp> ',
-                    NL = '<NL> ',
-                    BS = '<BS> ',
-                    Space = '<Space> ',
-                    Tab = '<Tab> ',
-                    F1 = '<F1>',
-                    F2 = '<F2>',
-                    F3 = '<F3>',
-                    F4 = '<F4>',
-                    F5 = '<F5>',
-                    F6 = '<F6>',
-                    F7 = '<F7>',
-                    F8 = '<F8>',
-                    F9 = '<F9>',
-                    F10 = '<F10>',
-                    F11 = '<F11>',
-                    F12 = '<F12>',
-                },
-            },
-
-            -- Document existing key chains
-            spec = {
-                -- { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
-                -- { '<leader>d', group = '[D]ocument' },
-                -- { '<leader>r', group = '[R]ename' },
-                { '<leader>s', group = '[S]earch' },
-                -- { '<leader>w', group = '[W]orkspace' },
-                -- { '<leader>t', group = '[T]oggle' },
-                -- { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
             },
         },
     },
@@ -577,32 +520,21 @@ vim.o.shiftwidth = 4
 vim.o.expandtab = true
 
 --custom commmands
-vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>', { desc = '[T]erminal' })
---lazygit?
-vim.keymap.set('n', '<leader>g', ':term<cr>ilazygit<cr>', { desc = 'Lazy[G]it' })
-
---oil.nvim
-vim.keymap.set('n', '<leader>e', ':Oil<cr>', { desc = '[E]xplorer' })
-
---resize windows
 local resize = function(win, amt, dir)
     return function()
         require('winresize').resize(win, amt, dir)
     end
 end
+
 vim.keymap.set('n', '<S-Left>', resize(0, 2, 'left'))
 vim.keymap.set('n', '<S-Down>', resize(0, 2, 'down'))
 vim.keymap.set('n', '<S-Up>', resize(0, 2, 'up'))
 vim.keymap.set('n', '<S-Right>', resize(0, 2, 'right'))
 
---lsp keymaps
-vim.keymap.set('n', 'grn', vim.lsp.buf.rename, { desc = '[R]e[n]ame' })
-vim.keymap.set('n', 'gra', vim.lsp.buf.code_action, { desc = '[G]oto Code [A]ction' })
-vim.keymap.set('n', 'grd', vim.lsp.buf.definition, { desc = '[G]oto Code [D]efinition' })
-vim.keymap.set('n', 'gri', vim.lsp.buf.implementation, { desc = '[G]oto Code [I]mplementation' })
-vim.keymap.set('n', 'grr', vim.lsp.buf.references, { desc = '[G]oto Code [R]eferences' })
+vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>', { desc = '[T]erminal' })
+vim.keymap.set('n', '<leader>e', ':Oil<cr>', { desc = '[E]xplorer' })
 
---fzf keymaps
+vim.keymap.set('n', '<leader>q', ':cwindow', { desc = 'Open diagnostic [Q]uickfix list' })
 vim.keymap.set('n', '<leader>sf', ':FzfLua files<cr>', { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sg', ':FzfLua live_grep<cr>', { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader><leader>', ':FzfLua buffers<cr>', { desc = '[S]earch [B]uffers' })
