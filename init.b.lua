@@ -1,3 +1,28 @@
+local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+    local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
+    local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+    if vim.v.shell_error ~= 0 then
+        error('Error cloning lazy.nvim:\n' .. out)
+    end
+end ---@diagnostic disable-next-line: undefined-field
+
+local rtp = vim.opt.rtp
+rtp:prepend(lazypath)
+
+require('lazy').setup {
+    {
+        'github/copilot.vim',
+        'Mofiqul/vscode.nvim',
+        'stevearc/oil.nvim',
+    },
+}
+require('oil').setup {
+    view_options = {
+        show_hidden = true,
+    },
+}
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -70,7 +95,9 @@ vim.opt.swapfile = false -- Disable swap files
 vim.opt.confirm = true
 
 vim.opt.grepprg = 'rg --smart-case --type "c" --type "cpp" --type "py" --vimgrep $* **'
+-- vim.opt.grepprg = 'ag --vimgrep'
 vim.opt.grepformat = '%f:%l:%c:%m'
+-- command! -args=+ Grep execute 'silent grep! <args>' | copen 42
 
 -- [[ Basic Keymaps ]]
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -87,7 +114,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end,
 })
 
-vim.cmd.colorscheme 'habamax'
+vim.api.nvim_create_autocmd("QuickFixCmdPost", {
+    pattern = "*grep*",
+    group = vim.api.nvim_create_augroup('QuickFixAutoOpen', { clear = true }),
+    command = "cwindow",
+    desc = "Open location window after command like :lgrep, :lmake",
+})
+
+vim.cmd.colorscheme 'vscode'
 
 vim.o.shell = 'bash'
 vim.o.shellcmdflag = '-c'
@@ -126,10 +160,16 @@ vim.keymap.set('v', 'g<down>', '<s-g>')
 
 vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>')
 vim.keymap.set('n', '<leader>sf', ':find ')
-vim.keymap.set('n', '<leader>sg', ':grep ')
-vim.keymap.set('n', '<leader>e', ':Ex<cr>')
-vim.keymap.set('n', '<leader><leader>', ':buffers<cr>:buffer')
+vim.keymap.set('n', '<leader>sg', ':silent grep! ')
+vim.keymap.set('n', '<leader>e', ':Oil<cr>')
+vim.keymap.set('n', '<leader><leader>', ':buffers<cr>:buffer ')
 vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
+vim.keymap.set('n', '<leader>q', ':cw<cr>')
+
+vim.keymap.set('n', '<S-Left>', '<C-w><')
+vim.keymap.set('n', '<S-Down>', '<C-w>-')
+vim.keymap.set('n', '<S-Up>', '<C-w>+')
+vim.keymap.set('n', '<S-Right>', '<C-w>>')
 
 vim.lsp.config.clangd = {
     cmd = { 'clangd', '--background-index' },
@@ -200,23 +240,3 @@ vim.diagnostic.config {
         end,
     },
 }
-
-
---
--- local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
--- if not (vim.uv or vim.loop).fs_stat(lazypath) then
---     local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
---     local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
---     if vim.v.shell_error ~= 0 then
---         error('Error cloning lazy.nvim:\n' .. out)
---     end
--- end ---@diagnostic disable-next-line: undefined-field
---
--- local rtp = vim.opt.rtp
--- rtp:prepend(lazypath)
---
--- require('lazy').setup {
---     {
---         'github/copilot.vim',
---     }
--- }

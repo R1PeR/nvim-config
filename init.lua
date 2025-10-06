@@ -387,6 +387,19 @@ require('lazy').setup {
                         default = 'builtin',
                     },
                 },
+                keymap = {
+                    builtin = {
+                        true,
+                        ['<c-u>'] = 'preview-page-up',
+                        ['<c-d>'] = 'preview-page-down',
+                    },
+                    fzf = {
+                        true,
+                        ['ctrl-u'] = 'preview-page-up',
+                        ['ctrl-d'] = 'preview-page-down',
+                        ['ctrl-q'] = 'select-all+accept',
+                    },
+                },
             }
         end,
     },
