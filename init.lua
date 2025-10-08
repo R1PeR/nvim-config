@@ -512,7 +512,7 @@ vim.keymap.set('n', '<S-Right>', resize(0, 2, 'right'))
 vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>', { desc = '[T]erminal' })
 vim.keymap.set('n', '<leader>e', ':Oil<cr>', { desc = '[E]xplorer' })
 
-vim.keymap.set('n', '<leader>q', ':cwindow', { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>q', ':cwindow<cr>', { desc = 'Open diagnostic [Q]uickfix list' })
 vim.keymap.set('n', '<leader>sf', ':FzfLua files<cr>', { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sg', ':FzfLua live_grep<cr>', { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader><leader>', ':FzfLua buffers<cr>', { desc = '[S]earch [B]uffers' })
