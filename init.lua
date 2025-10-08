@@ -166,27 +166,8 @@ require('lazy').setup {
         end,
     },
     {
-        'martinsione/darkplus.nvim',
-        'unrealjo/neovim-purple',
         'Mofiqul/vscode.nvim',
-        'folke/tokyonight.nvim',
-        'Verf/deepwhite.nvim',
-        'slugbyte/lackluster.nvim',
-        'Mofiqul/vscode.nvim',
-        'rakr/vim-one',
-        'NLKNguyen/papercolor-theme',
-        'sainnhe/everforest',
-        'projekt0n/github-nvim-theme',
-        'sainnhe/sonokai',
-        'sainnhe/gruvbox-material',
-        'sainnhe/edge',
-        'jnz/studio98',
-        'savq/melange',
-        'thallada/farout.nvim',
-        'martinsione/darkplus.nvim',
-        'wnkz/monoglow.nvim',
-        'dasupradyumna/midnight.nvim',
-        'metalelf0/jellybeans-nvim',
+        'jackplus-xyz/binary.nvim',
     },
     {
         'NStefan002/visual-surround.nvim',
@@ -446,14 +427,15 @@ vim.keymap.set('n', '<c-up>', '<c-u>')
 vim.keymap.set('n', '<c-down>', '<c-d>')
 
 --save
-vim.keymap.set('n', '<c-s>', ':w<cr>')
-vim.keymap.set('i', '<c-s>', '<esc>:w<cr><i>')
+-- vim.keymap.set('n', '<c-s>', ':w<cr>')
+-- vim.keymap.set('i', '<c-s>', '<esc>:w<cr><i>')
 
 --indent
 vim.keymap.set('n', '<tab>', '>>')
 vim.keymap.set('n', '<s-tab>', '<<')
 vim.keymap.set('v', '<tab>', '>gv')
 vim.keymap.set('v', '<s-tab>', '<gv')
+vim.keymap.set('i', '<s-tab>', '<backspace>')
 
 --mini.move
 vim.keymap.set('n', '<m-left>', '<m-h>')
@@ -466,10 +448,6 @@ vim.keymap.set('v', '<m-down>', '<m-j>')
 vim.keymap.set('v', '<m-up>', '<m-k>')
 
 --delete shift + arrows
--- vim.keymap.set('n', '<s-left>', '')
--- vim.keymap.set('n', '<s-right>', '')
--- vim.keymap.set('n', '<s-down>', '')
--- vim.keymap.set('n', '<s-up>', '')
 vim.keymap.set('v', '<s-left>', '')
 vim.keymap.set('v', '<s-right>', '')
 vim.keymap.set('v', '<s-down>', '')
