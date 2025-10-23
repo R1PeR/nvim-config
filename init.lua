@@ -293,6 +293,16 @@ require('lazy').setup {
         'pogyomo/winresize.nvim',
     },
     {
+        'nvim-lualine/lualine.nvim',
+        config = function()
+            require('lualine').setup {
+                options = {
+                    theme = 'vscode',
+                },
+            }
+        end,
+    },
+    {
         'ibhagwan/fzf-lua',
         dependencies = { 'nvim-tree/nvim-web-devicons' },
         config = function()
