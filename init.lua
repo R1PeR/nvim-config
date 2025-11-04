@@ -220,6 +220,7 @@ require('lazy').setup {
     },
     {
         'github/copilot.vim',
+        tag = "v1.52.0",
     },
     { -- Autocompletion
         'Saghen/blink.cmp',
