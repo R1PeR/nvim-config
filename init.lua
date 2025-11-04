@@ -240,7 +240,6 @@ require('lazy').setup {
                 opts = {},
             },
             'folke/lazydev.nvim',
-            -- 'fang2hou/blink-copilot',
         },
         --- @module 'blink.cmp'
         --- @type blink.cmp.Config
@@ -342,7 +341,6 @@ require('lazy').setup {
 vim.api.nvim_create_autocmd('User', {
     pattern = 'BlinkCmpMenuOpen',
     callback = function()
-        -- require('copilot.suggestion').dismiss()
         vim.b.copilot_suggestion_hidden = true
     end,
 })
@@ -361,27 +359,6 @@ vim.lsp.config.clangd = {
 }
 
 vim.lsp.enable { 'clangd' }
-
-vim.lsp.config.lua_ls = {
-    cmd = {
-        'lua-language-server',
-    },
-    root_markers = {
-        '.git',
-        '.luacheckrc',
-        '.luarc.json',
-        '.luarc.jsonc',
-        '.stylua.toml',
-        'selene.toml',
-        'selene.yml',
-        'stylua.toml',
-    },
-    filetype = {
-        'lua',
-    },
-    single_file_support = true,
-}
-vim.lsp.enable { 'lua_ls' }
 
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(ev)
@@ -480,12 +457,8 @@ vim.keymap.set('n', 'g<down>', '<s-g>')
 --visual-mode commands
 vim.keymap.set('v', '<a-j>', ':MoveBlock(1)<cr>')
 vim.keymap.set('v', '<a-k>', ':MoveBlock(-1)<cr>')
-vim.keymap.set('v', '<a-h>', ':MoveHBlock(-1)<cr>')
-vim.keymap.set('v', '<a-l>', ':MoveHBlock(1)<cr>')
 vim.keymap.set('v', '<a-down>', ':MoveBlock(1)<cr>')
 vim.keymap.set('v', '<a-up>', ':MoveBlock(-1)<cr>')
-vim.keymap.set('v', '<a-left>', ':MoveHBlock(-1)<cr>')
-vim.keymap.set('v', '<a-right>', ':MoveHBlock(1)<cr>')
 vim.keymap.set('v', 'g<right>', '$')
 vim.keymap.set('v', 'g<left>', '0')
 vim.keymap.set('v', 'g<up>', 'gg')
