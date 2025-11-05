@@ -1,81 +1,59 @@
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
--- Make line numbers default
+
 vim.opt.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
 
--- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
--- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
 vim.schedule(function()
     vim.opt.clipboard = 'unnamedplus'
 end)
 
--- Enable break indent
 vim.opt.breakindent = true
 
--- Save undo history
 vim.opt.undofile = true
 
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
--- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
 
--- Decrease update time
 vim.opt.updatetime = 250
 
--- Decrease mapped sequence wait time
 vim.opt.timeoutlen = 300
 
--- Configure how new splits should be opened
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
--- Sets how neovim will display certain whitespace characters in the editor.
---  See `:help 'list'`
---  and `:help 'listchars'`
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
--- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 
--- Show which line your cursor is on
 vim.opt.cursorline = true
-
--- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
-
-vim.opt.swapfile = false -- Disable swap files
-
--- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
--- instead raise a dialog asking if you wish to save the current file(s)
--- See `:help 'confirm'`
+vim.opt.swapfile = false
 vim.opt.confirm = true
 
 vim.opt.grepprg = 'rg --vimgrep'
 vim.opt.grepformat = '%f:%l:%c:%m'
 
--- [[ Basic Keymaps ]]
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.opt.shell = 'bash'
+vim.opt.shellcmdflag = '-c'
+vim.opt.shellslash = true
+vim.opt.shellxquote = ''
 
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
 
 vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight when yanking (copying) text',
@@ -98,6 +76,59 @@ local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
 require('lazy').setup {
+    {
+        'nvim-mini/mini.icons',
+        config = function()
+            require('mini.icons').setup {}
+        end,
+    },
+    {
+        'nvim-mini/mini.move',
+        config = function()
+            require('mini.move').setup {
+                mappings = {
+                    left = '<a-left>',
+                    right = '<a-right>',
+                    down = '<a-down>',
+                    up = '<a-up>',
+                    line_left = '<a-left>',
+                    line_right = '<a-right>',
+                    line_down = '<a-down>',
+                    line_up = '<a-up>',
+                },
+            }
+        end,
+    },
+    {
+        'nvim-mini/mini.pick',
+        config = function()
+            require('mini.pick').setup {
+                use_icons = true,
+            }
+        end,
+    },
+    {
+        'nvim-mini/mini.pairs',
+        config = function()
+            require('mini.pairs').setup {}
+        end,
+    },
+    {
+        'nvim-mini/mini.surround',
+        config = function()
+            require('mini.surround').setup {}
+        end,
+    },
+    {
+        'nvim-mini/mini.statusline',
+        config = function()
+            require('mini.statusline').setup {}
+        end,
+    },
+    {
+        'pogyomo/winresize.nvim',
+        'Mofiqul/vscode.nvim',
+    },
     { -- Adds git related signs to the gutter, as well as utilities for managing changes
         'lewis6991/gitsigns.nvim',
         opts = {
@@ -111,16 +142,40 @@ require('lazy').setup {
         },
     },
     {
-        -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-        -- used for completion, annotations and signatures of Neovim apis
-        'folke/lazydev.nvim',
-        ft = 'lua',
-        opts = {
-            library = {
-                -- Load luvit types when the `vim.uv` word is found
-                { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+        'github/copilot.vim',
+        tag = 'v1.52.0',
+    },
+    { -- autoformat
+        'stevearc/conform.nvim',
+        event = { 'bufwritepre' },
+        cmd = { 'ConformInfo' },
+        keys = {
+            {
+                '<leader>f',
+                function()
+                    require('conform').format { async = true, lsp_format = 'fallback' }
+                end,
+                mode = '',
             },
         },
+        opts = {
+            notify_on_error = false,
+            formatters_by_ft = {
+                lua = { 'stylua' },
+                python = { 'isort', 'black' },
+                javascript = { 'prettierd', 'prettier', stop_after_first = true },
+            },
+        },
+    },
+    {
+        'stevearc/oil.nvim',
+        config = function()
+            require('oil').setup {
+                view_options = {
+                    show_hidden = true,
+                },
+            }
+        end,
     },
     { -- Highlight, edit, and navigate code
         'nvim-treesitter/nvim-treesitter',
@@ -135,17 +190,8 @@ require('lazy').setup {
                 'diff',
                 'python',
                 'lua',
-                'luadoc',
-                'markdown',
-                'markdown_inline',
-                'vim',
-                'vimdoc',
-                'gitcommit',
-                'git_rebase',
-                'git_config',
             },
 
-            -- Autoinstall languages that are not installed
             auto_install = true,
             highlight = {
                 enable = true,
@@ -154,188 +200,7 @@ require('lazy').setup {
         },
     },
     {
-        'm4xshen/autoclose.nvim',
-        config = function()
-            require('autoclose').setup {}
-        end,
-    },
-    {
-        'fedepujol/move.nvim',
-        config = function()
-            require('move').setup {}
-        end,
-    },
-    {
-        'Mofiqul/vscode.nvim',
-        'jackplus-xyz/binary.nvim',
-    },
-    {
-        'NStefan002/visual-surround.nvim',
-        config = function()
-            require('visual-surround').setup {
-                enable_wrapped_deletion = true,
-            }
-            -- [optional] custom keymaps
-        end,
-    },
-    { -- autoformat
-        'stevearc/conform.nvim',
-        event = { 'bufwritepre' },
-        cmd = { 'ConformInfo' },
-        keys = {
-            {
-                '<leader>f',
-                function()
-                    require('conform').format { async = true, lsp_format = 'fallback' }
-                end,
-                mode = '',
-                desc = '[F]ormat buffer',
-            },
-        },
-        opts = {
-            notify_on_error = false,
-            format_on_save = function(bufnr)
-                -- disable "format_on_save lsp_fallback" for languages that don't
-                -- have a well standardized coding style. you can add additional
-                -- languages here or re-enable it for the disabled ones.
-                local disable_filetypes = { c = true, cpp = true }
-                if disable_filetypes[vim.bo[bufnr].filetype] then
-                    return nil
-                else
-                    return {
-                        timeout_ms = 500,
-                        lsp_format = 'fallback',
-                    }
-                end
-            end,
-            formatters_by_ft = {
-                lua = { 'stylua' },
-                -- conform can also run multiple formatters sequentially
-                python = { 'isort', 'black' },
-                --
-                -- you can use 'stop_after_first' to run the first available formatter from the list
-                javascript = { 'prettierd', 'prettier', stop_after_first = true },
-            },
-        },
-    },
-    {
-        'github/copilot.vim',
-        tag = "v1.52.0",
-    },
-    { -- Autocompletion
-        'Saghen/blink.cmp',
-        event = 'VimEnter',
-        version = '1.*',
-        dependencies = {
-            -- Snippet Engine
-            {
-                'L3MON4D3/LuaSnip',
-                version = '2.*',
-                build = (function()
-                    if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-                        return
-                    end
-                    return 'make install_jsregexp'
-                end)(),
-                dependencies = {},
-                opts = {},
-            },
-            'folke/lazydev.nvim',
-        },
-        --- @module 'blink.cmp'
-        --- @type blink.cmp.Config
-        opts = {
-            keymap = {
-                preset = 'none',
-                ['<CR>'] = { 'accept', 'fallback' },
-                ['<Tab>'] = { 'accept', 'fallback' },
-                ['<Up>'] = { 'select_prev', 'fallback' },
-                ['<Down>'] = { 'select_next', 'fallback' },
-            },
-
-            completion = {
-                documentation = { auto_show = false, auto_show_delay_ms = 500 },
-                trigger = {
-                    prefetch_on_insert = true,
-                },
-                ghost_text = { enabled = true },
-                list = { selection = { preselect = false, auto_insert = true } },
-            },
-
-            sources = {
-                default = { 'lsp', 'path', 'snippets', 'lazydev', 'buffer' },
-                providers = {
-                    lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
-                },
-            },
-
-            appearance = {
-                use_nvim_cmp_as_default = false,
-                nerd_font_variant = 'mono',
-            },
-
-            snippets = { preset = 'luasnip' },
-            fuzzy = { implementation = 'prefer_rust_with_warning' },
-            signature = { enabled = true },
-        },
-    },
-    {
-        'stevearc/oil.nvim',
-        config = function()
-            require('oil').setup {
-                view_options = {
-                    show_hidden = true,
-                },
-            }
-        end,
-    },
-    {
-        'pogyomo/winresize.nvim',
-    },
-    {
-        'nvim-lualine/lualine.nvim',
-        config = function()
-            require('lualine').setup {
-                options = {
-                    theme = 'vscode',
-                },
-            }
-        end,
-    },
-    {
-        'ibhagwan/fzf-lua',
-        dependencies = { 'nvim-tree/nvim-web-devicons' },
-        config = function()
-            require('fzf-lua').setup {
-                { 'fzf-native' },
-                winopts = {
-                    height = 0.4,
-                    width = 1,
-                    row = 1,
-                    col = 0,
-                    border = 'border-top',
-                    backdrop = 100,
-                    preview = {
-                        delay = 0,
-                        border = 'border-top',
-                        default = 'builtin',
-                    },
-                },
-                keymap = {
-                    builtin = {
-                        true,
-                        ['<c-u>'] = 'preview-page-up',
-                        ['<c-d>'] = 'preview-page-down',
-                    },
-                    fzf = {
-                        true,
-                        ['ctrl-u'] = 'preview-page-up',
-                        ['ctrl-d'] = 'preview-page-down',
-                        ['ctrl-q'] = 'select-all+accept',
-                    },
-                },
-            }
-        end,
+        'ctrlpvim/ctrlp.vim',
     },
 }
 
@@ -400,23 +265,29 @@ vim.diagnostic.config {
         end,
     },
 }
+--custom commmands
+local resize = function(win, amt, dir)
+    return function()
+        require('winresize').resize(win, amt, dir)
+    end
+end
 --theme
-vim.o.background = 'dark'
+vim.opt.background = 'dark'
 vim.cmd.colorscheme 'vscode'
 
+--basic keymaps
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+
 --movement keymaps
-vim.keymap.set('n', '<c-w><c-left>', '<c-w><c-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<c-w><c-right>', '<c-w><c-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<c-w><c-down>', '<c-w><c-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<c-w><c-up>', '<c-w><c-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('n', '<c-w><c-left>', '<c-w><c-h>')
+vim.keymap.set('n', '<c-w><c-right>', '<c-w><c-l>')
+vim.keymap.set('n', '<c-w><c-down>', '<c-w><c-j>')
+vim.keymap.set('n', '<c-w><c-up>', '<c-w><c-k>')
 
 --scrolling
 vim.keymap.set('n', '<c-up>', '<c-u>')
 vim.keymap.set('n', '<c-down>', '<c-d>')
-
---save
--- vim.keymap.set('n', '<c-s>', ':w<cr>')
--- vim.keymap.set('i', '<c-s>', '<esc>:w<cr><i>')
 
 --indent
 vim.keymap.set('n', '<tab>', '>>')
@@ -425,16 +296,6 @@ vim.keymap.set('v', '<tab>', '>gv')
 vim.keymap.set('v', '<s-tab>', '<gv')
 vim.keymap.set('i', '<s-tab>', '<backspace>')
 
---mini.move
-vim.keymap.set('n', '<m-left>', '<m-h>')
-vim.keymap.set('n', '<m-right>', '<m-l>')
-vim.keymap.set('n', '<m-down>', '<m-j>')
-vim.keymap.set('n', '<m-up>', '<m-k>')
-vim.keymap.set('v', '<m-left>', '<m-h>')
-vim.keymap.set('v', '<m-right>', '<m-l>')
-vim.keymap.set('v', '<m-down>', '<m-j>')
-vim.keymap.set('v', '<m-up>', '<m-k>')
-
 --delete shift + arrows
 vim.keymap.set('v', '<s-left>', '')
 vim.keymap.set('v', '<s-right>', '')
@@ -442,24 +303,12 @@ vim.keymap.set('v', '<s-down>', '')
 vim.keymap.set('v', '<s-up>', '')
 
 --normal-mode commands
-vim.keymap.set('n', '<a-j>', ':MoveLine(1)<cr>')
-vim.keymap.set('n', '<a-k>', ':MoveLine(-1)<cr>')
-vim.keymap.set('n', '<a-h>', ':MoveHChar(-1)<cr>')
-vim.keymap.set('n', '<a-l>', ':MoveHChar(1)<cr>')
-vim.keymap.set('n', '<a-down>', ':MoveLine(1)<cr>')
-vim.keymap.set('n', '<a-up>', ':MoveLine(-1)<cr>')
-vim.keymap.set('n', '<a-left>', ':MoveHChar(-1)<cr>')
-vim.keymap.set('n', '<a-right>', ':MoveHChar(1)<cr>')
 vim.keymap.set('n', 'g<right>', '$')
 vim.keymap.set('n', 'g<left>', '0')
 vim.keymap.set('n', 'g<up>', 'gg')
 vim.keymap.set('n', 'g<down>', '<s-g>')
 
 --visual-mode commands
-vim.keymap.set('v', '<a-j>', ':MoveBlock(1)<cr>')
-vim.keymap.set('v', '<a-k>', ':MoveBlock(-1)<cr>')
-vim.keymap.set('v', '<a-down>', ':MoveBlock(1)<cr>')
-vim.keymap.set('v', '<a-up>', ':MoveBlock(-1)<cr>')
 vim.keymap.set('v', 'g<right>', '$')
 vim.keymap.set('v', 'g<left>', '0')
 vim.keymap.set('v', 'g<up>', 'gg')
@@ -471,34 +320,26 @@ vim.keymap.set('n', '<c-w>t<right>', ':tabn<cr>')
 vim.keymap.set('n', '<c-w>tn', ':tabnew<cr>')
 vim.keymap.set('n', '<c-w>tc', ':tabclose<cr>')
 
-vim.o.shell = 'bash'
-vim.o.shellcmdflag = '-c'
-vim.o.shellslash = true
-vim.o.shellxquote = ''
-
-vim.o.tabstop = 4
-vim.o.softtabstop = 4
-vim.o.shiftwidth = 4
-vim.o.expandtab = true
-
---custom commmands
-local resize = function(win, amt, dir)
-    return function()
-        require('winresize').resize(win, amt, dir)
-    end
-end
-
 vim.keymap.set('n', '<S-Left>', resize(0, 2, 'left'))
 vim.keymap.set('n', '<S-Down>', resize(0, 2, 'down'))
 vim.keymap.set('n', '<S-Up>', resize(0, 2, 'up'))
 vim.keymap.set('n', '<S-Right>', resize(0, 2, 'right'))
 
-vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>', { desc = '[T]erminal' })
-vim.keymap.set('n', '<leader>e', ':Oil<cr>', { desc = '[E]xplorer' })
+vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>')
+vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 
-vim.keymap.set('n', '<leader>q', ':cwindow<cr>', { desc = 'Open diagnostic [Q]uickfix list' })
-vim.keymap.set('n', '<leader>sf', ':FzfLua files<cr>', { desc = '[S]earch [F]iles' })
-vim.keymap.set('n', '<leader>sg', ':FzfLua live_grep<cr>', { desc = '[S]earch by [G]rep' })
-vim.keymap.set('n', '<leader><leader>', ':FzfLua buffers<cr>', { desc = '[S]earch [B]uffers' })
-vim.keymap.set('n', '<leader>sh', ':FzfLua helptags<cr>', { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<leader>sd', ':FzfLua diagnostics_document<cr>', { desc = '[S]earch [D]iagnostics' })
+vim.keymap.set('n', '<leader>q', ':cwindow<cr>')
+vim.keymap.set('n', '<leader>sf', ':Pick files<cr>')
+vim.keymap.set('n', '<leader>sg', ':Pick grep_live<cr>')
+vim.keymap.set('n', '<leader><leader>', ':Pick buffers<cr>')
+vim.keymap.set('n', '<leader>sh', ':Pick help<cr>')
+-- vim.keymap.set('n', '<leader>sd', ':FzfLua diagnostics_document<cr>', { desc = '[S]earch [D]iagnostics' })
+
+-- MiniPickMatchCurrent = '#264F78'
+-- MiniPickMatchMarked = '#264F78'
+-- MiniPickMatchRanges = '#264F78'
+
+local c = require('vscode.colors').get_colors()
+vim.api.nvim_set_hl(0, 'MiniPickMatchCurrent', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
+vim.api.nvim_set_hl(0, 'MiniPickMatchMarked', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
+vim.api.nvim_set_hl(0, 'MiniPickMatchRanges', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
