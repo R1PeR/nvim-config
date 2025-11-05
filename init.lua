@@ -141,6 +141,12 @@ require('lazy').setup {
         end,
     },
     {
+        'nvim-mini/mini.tabline',
+        config = function()
+            require('mini.tabline').setup {}
+        end,
+    },
+    {
         'pogyomo/winresize.nvim',
         'Mofiqul/vscode.nvim',
     },
@@ -344,6 +350,7 @@ vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>')
 vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 
 vim.keymap.set('n', '<leader>q', ':cwindow<cr>')
+vim.keymap.set('n', '<leader>d', ':bd<cr>')
 vim.keymap.set('n', '<leader>sf', ':Pick files<cr>')
 vim.keymap.set('n', '<leader>sg', ':Pick grep_live<cr>')
 vim.keymap.set('n', '<leader><leader>', ':Pick buffers<cr>')
