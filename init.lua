@@ -75,6 +75,18 @@ end ---@diagnostic disable-next-line: undefined-field
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
+win_config = function()
+    local height = math.floor(0.3 * vim.o.lines)
+    local width = vim.o.columns
+    return {
+        anchor = 'NW',
+        height = height,
+        width = width,
+        row = (vim.o.lines - height),
+        col = 0,
+    }
+end
+
 require('lazy').setup {
     {
         'nvim-mini/mini.icons',
@@ -104,6 +116,9 @@ require('lazy').setup {
         config = function()
             require('mini.pick').setup {
                 use_icons = true,
+                window = {
+                    config = win_config,
+                },
             }
         end,
     },
@@ -334,10 +349,6 @@ vim.keymap.set('n', '<leader>sg', ':Pick grep_live<cr>')
 vim.keymap.set('n', '<leader><leader>', ':Pick buffers<cr>')
 vim.keymap.set('n', '<leader>sh', ':Pick help<cr>')
 -- vim.keymap.set('n', '<leader>sd', ':FzfLua diagnostics_document<cr>', { desc = '[S]earch [D]iagnostics' })
-
--- MiniPickMatchCurrent = '#264F78'
--- MiniPickMatchMarked = '#264F78'
--- MiniPickMatchRanges = '#264F78'
 
 local c = require('vscode.colors').get_colors()
 vim.api.nvim_set_hl(0, 'MiniPickMatchCurrent', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
