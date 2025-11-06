@@ -1,6 +1,9 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 vim.g.have_nerd_font = true
 vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
@@ -218,6 +221,63 @@ require('lazy').setup {
                 enable = true,
             },
             indent = { enable = false },
+        },
+    },
+    { -- Autocompletion
+        'Saghen/blink.cmp',
+        event = 'VimEnter',
+        version = '1.*',
+        dependencies = {
+            -- Snippet Engine
+            {
+                'L3MON4D3/LuaSnip',
+                version = '2.*',
+                build = (function()
+                    if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+                        return
+                    end
+                    return 'make install_jsregexp'
+                end)(),
+                dependencies = {},
+                opts = {},
+            },
+            'folke/lazydev.nvim',
+        },
+        --- @module 'blink.cmp'
+        --- @type blink.cmp.Config
+        opts = {
+            keymap = {
+                preset = 'none',
+                ['<CR>'] = { 'accept', 'fallback' },
+                ['<Tab>'] = { 'accept', 'fallback' },
+                ['<Up>'] = { 'select_prev', 'fallback' },
+                ['<Down>'] = { 'select_next', 'fallback' },
+            },
+
+            completion = {
+                documentation = { auto_show = false, auto_show_delay_ms = 500 },
+                trigger = {
+                    prefetch_on_insert = true,
+                },
+                ghost_text = { enabled = true },
+                list = { selection = { preselect = false, auto_insert = true } },
+            },
+
+            sources = {
+                default = { 'lsp', 'path', 'snippets', 'lazydev', 'buffer' },
+                providers = {
+                    lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+                },
+            },
+
+            appearance = {
+                use_nvim_cmp_as_default = false,
+                nerd_font_variant = 'mono',
+            },
+
+            snippets = { preset = 'luasnip' },
+            fuzzy = { implementation = 'prefer_rust_with_warning' },
+            signature = { enabled = true },
         },
     },
 }
