@@ -220,9 +220,6 @@ require('lazy').setup {
             indent = { enable = false },
         },
     },
-    {
-        'ctrlpvim/ctrlp.vim',
-    },
 }
 
 vim.api.nvim_create_autocmd('User', {
