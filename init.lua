@@ -144,12 +144,6 @@ require('lazy').setup {
         end,
     },
     {
-        'nvim-mini/mini.tabline',
-        config = function()
-            require('mini.tabline').setup {}
-        end,
-    },
-    {
         'pogyomo/winresize.nvim',
         'Mofiqul/vscode.nvim',
     },
