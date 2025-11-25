@@ -277,6 +277,9 @@ require('lazy').setup {
     {
         'mfussenegger/nvim-dap',
     },
+    {
+        'tpope/vim-fugitive',
+    },
 }
 
 vim.api.nvim_create_autocmd('User', {
@@ -430,6 +433,7 @@ vim.keymap.set('n', '<leader>sh', ':Pick help<cr>')
 vim.keymap.set('n', '<leader>gc', function()
     generate_compile_flags_from_vscode(true)
 end)
+vim.keymap.set('n', '<leader>g', ':Git<cr>')
 
 local c = require('vscode.colors').get_colors()
 vim.api.nvim_set_hl(0, 'MiniPickMatchCurrent', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
