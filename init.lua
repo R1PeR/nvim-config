@@ -274,8 +274,8 @@ require('lazy').setup {
             signature = { enabled = true },
         },
     },
-    { 
-        "mfussenegger/nvim-dap"
+    {
+        'mfussenegger/nvim-dap',
     },
 }
 
@@ -346,10 +346,27 @@ local resize = function(win, amt, dir)
         require('winresize').resize(win, amt, dir)
     end
 end
+
+generate_compile_flags_from_vscode = function(force)
+    local settings_path = vim.fn.getcwd() .. '/.vscode/c_cpp_properties.json'
+    local compile_flags_path = vim.fn.getcwd() .. '/compile_flags.txt'
+    if vim.fn.filereadable(settings_path) == 0 then
+        return
+    end
+    if vim.fn.filereadable(compile_flags_path) == 1 and force == false then
+        return
+    end
+    print 'Generating compile_flags.txt from .vscode/c_cpp_properties.json...'
+    local keys = vim.api.nvim_replace_termcodes('<leader>ti', true, false, true)
+    vim.api.nvim_feedkeys(keys, 'm', false)
+    keys = vim.api.nvim_replace_termcodes('convert-flags.sh .vscode/c_cpp_properties.json<cr>', true, false, true)
+    vim.api.nvim_feedkeys(keys, 'm', false)
+end
+
 --theme
 vim.opt.background = 'dark'
 vim.cmd.colorscheme 'vscode'
-vim.opt.guifont = "0xProto Nerd Font Mono:h12"
+vim.opt.guifont = '0xProto Nerd Font Mono:h12'
 
 --basic keymaps
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -410,104 +427,108 @@ vim.keymap.set('n', '<leader>sf', ':Pick files<cr>')
 vim.keymap.set('n', '<leader>sg', ':Pick grep_live<cr>')
 vim.keymap.set('n', '<leader><leader>', ':Pick buffers<cr>')
 vim.keymap.set('n', '<leader>sh', ':Pick help<cr>')
--- vim.keymap.set('n', '<leader>sd', ':FzfLua diagnostics_document<cr>', { desc = '[S]earch [D]iagnostics' })
+vim.keymap.set('n', '<leader>gc', function()
+    generate_compile_flags_from_vscode(true)
+end)
 
 local c = require('vscode.colors').get_colors()
 vim.api.nvim_set_hl(0, 'MiniPickMatchCurrent', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
 vim.api.nvim_set_hl(0, 'MiniPickMatchMarked', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
 vim.api.nvim_set_hl(0, 'MiniPickMatchRanges', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
 
--- DAP config 
-local dap = require('dap')
+-- DAP config
+local dap = require 'dap'
 dap.adapters.gdb = {
-  type = "executable",
-  command = "gdb",
-  args = { "--interpreter=dap", "--eval-command", "set print pretty on" }
+    type = 'executable',
+    command = 'gdb',
+    args = { '--interpreter=dap', '--eval-command', 'set print pretty on' },
 }
 dap.adapters.python = function(cb, config)
-  if config.request == 'attach' then
-    ---@diagnostic disable-next-line: undefined-field
-    local port = (config.connect or config).port
-    ---@diagnostic disable-next-line: undefined-field
-    local host = (config.connect or config).host or '127.0.0.1'
-    cb({
-      type = 'server',
-      port = assert(port, '`connect.port` is required for a python `attach` configuration'),
-      host = host,
-      options = {
-        source_filetype = 'python',
-      },
-    })
-  else
-    cb({
-      type = 'executable',
-      command = 'path/to/virtualenvs/debugpy/bin/python',
-      args = { '-m', 'debugpy.adapter' },
-      options = {
-        source_filetype = 'python',
-      },
-    })
-  end
+    if config.request == 'attach' then
+        ---@diagnostic disable-next-line: undefined-field
+        local port = (config.connect or config).port
+        ---@diagnostic disable-next-line: undefined-field
+        local host = (config.connect or config).host or '127.0.0.1'
+        cb {
+            type = 'server',
+            port = assert(port, '`connect.port` is required for a python `attach` configuration'),
+            host = host,
+            options = {
+                source_filetype = 'python',
+            },
+        }
+    else
+        cb {
+            type = 'executable',
+            command = 'path/to/virtualenvs/debugpy/bin/python',
+            args = { '-m', 'debugpy.adapter' },
+            options = {
+                source_filetype = 'python',
+            },
+        }
+    end
 end
 dap.configurations.c = {
-  {
-    name = "Launch",
-    type = "gdb",
-    request = "launch",
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
-    args = {}, -- provide arguments if needed
-    cwd = "${workspaceFolder}",
-    stopAtBeginningOfMainSubprogram = false,
-  },
-  {
-    name = "Select and attach to process",
-    type = "gdb",
-    request = "attach",
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
-    pid = function()
-      local name = vim.fn.input('Executable name (filter): ')
-      return require("dap.utils").pick_process({ filter = name })
-    end,
-    cwd = '${workspaceFolder}'
-  },
-  {
-    name = 'Attach to gdbserver :1234',
-    type = 'gdb',
-    request = 'attach',
-    target = 'localhost:1234',
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
-    cwd = '${workspaceFolder}'
-  }
+    {
+        name = 'Launch',
+        type = 'gdb',
+        request = 'launch',
+        program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        args = {}, -- provide arguments if needed
+        cwd = '${workspaceFolder}',
+        stopAtBeginningOfMainSubprogram = false,
+    },
+    {
+        name = 'Select and attach to process',
+        type = 'gdb',
+        request = 'attach',
+        program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        pid = function()
+            local name = vim.fn.input 'Executable name (filter): '
+            return require('dap.utils').pick_process { filter = name }
+        end,
+        cwd = '${workspaceFolder}',
+    },
+    {
+        name = 'Attach to gdbserver :1234',
+        type = 'gdb',
+        request = 'attach',
+        target = 'localhost:1234',
+        program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+    },
 }
 dap.configurations.cpp = dap.configurations.c
 dap.configurations.python = {
-  {
-    -- The first three options are required by nvim-dap
-    type = 'python'; -- the type here established the link to the adapter definition: `dap.adapters.python`
-    request = 'launch';
-    name = "Launch file";
+    {
+        -- The first three options are required by nvim-dap
+        type = 'python', -- the type here established the link to the adapter definition: `dap.adapters.python`
+        request = 'launch',
+        name = 'Launch file',
 
-    -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
+        -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
 
-    program = "${file}"; -- This configuration will launch the current file if used.
-    pythonPath = function()
-      -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
-      -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
-      -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
-      local cwd = vim.fn.getcwd()
-      if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
-        return cwd .. '/venv/bin/python'
-      elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
-        return cwd .. '/.venv/bin/python'
-      else
-        return '/usr/bin/python'
-      end
-    end;
-  },
+        program = '${file}', -- This configuration will launch the current file if used.
+        pythonPath = function()
+            -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
+            -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
+            -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
+            local cwd = vim.fn.getcwd()
+            if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+                return cwd .. '/venv/bin/python'
+            elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+                return cwd .. '/.venv/bin/python'
+            else
+                return '/usr/bin/python'
+            end
+        end,
+    },
 }
+
+generate_compile_flags_from_vscode(false)
