@@ -407,12 +407,6 @@ vim.keymap.set('v', 'g<left>', '0')
 vim.keymap.set('v', 'g<up>', 'gg')
 vim.keymap.set('v', 'g<down>', '<s-g>')
 
---tab movement
-vim.keymap.set('n', '<c-w>t<left>', ':tabp<cr>')
-vim.keymap.set('n', '<c-w>t<right>', ':tabn<cr>')
-vim.keymap.set('n', '<c-w>tn', ':tabnew<cr>')
-vim.keymap.set('n', '<c-w>tc', ':tabclose<cr>')
-
 vim.keymap.set('n', '<S-Left>', resize(0, 2, 'left'))
 vim.keymap.set('n', '<S-Down>', resize(0, 2, 'down'))
 vim.keymap.set('n', '<S-Up>', resize(0, 2, 'up'))
