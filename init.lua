@@ -78,18 +78,6 @@ end ---@diagnostic disable-next-line: undefined-field
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
-win_config = function()
-    local height = math.floor(0.3 * vim.o.lines)
-    local width = vim.o.columns
-    return {
-        anchor = 'NW',
-        height = height,
-        width = width,
-        row = (vim.o.lines - height),
-        col = 0,
-    }
-end
-
 require('lazy').setup {
     {
         'nvim-mini/mini.icons',
@@ -110,17 +98,6 @@ require('lazy').setup {
                     line_right = '<a-right>',
                     line_down = '<a-down>',
                     line_up = '<a-up>',
-                },
-            }
-        end,
-    },
-    {
-        'nvim-mini/mini.pick',
-        config = function()
-            require('mini.pick').setup {
-                use_icons = true,
-                window = {
-                    config = win_config,
                 },
             }
         end,
@@ -277,6 +254,10 @@ require('lazy').setup {
     {
         'tpope/vim-fugitive',
     },
+    {
+        'junegunn/fzf',
+        'junegunn/fzf.vim',
+    }
 }
 
 vim.api.nvim_create_autocmd('User', {
@@ -417,18 +398,16 @@ vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 
 vim.keymap.set('n', '<leader>q', ':cwindow<cr>')
 vim.keymap.set('n', '<leader>d', ':bd<cr>')
-vim.keymap.set('n', '<leader>sf', ':Pick files<cr>')
-vim.keymap.set('n', '<leader>sg', ':Pick grep_live<cr>')
-vim.keymap.set('n', '<leader><leader>', ':Pick buffers<cr>')
-vim.keymap.set('n', '<leader>sh', ':Pick help<cr>')
+vim.keymap.set('n', '<leader>sf', ':Files<cr>')
+vim.keymap.set('n', '<leader>sg', ':RG<cr>')
+vim.keymap.set('n', '<leader><leader>', ':Buffers<cr>')
+vim.keymap.set('n', '<leader>sh', ':Helptags<cr>')
 vim.keymap.set('n', '<leader>gc', function()
     generate_compile_flags_from_vscode(true)
 end)
 vim.keymap.set('n', '<leader>g', ':Git<cr>')
 
-local c = require('vscode.colors').get_colors()
-vim.api.nvim_set_hl(0, 'MiniPickMatchCurrent', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
-vim.api.nvim_set_hl(0, 'MiniPickMatchMarked', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
-vim.api.nvim_set_hl(0, 'MiniPickMatchRanges', { fg = c.vscFront, bg = c.vscPopupHighlightBlue })
-
 generate_compile_flags_from_vscode(false)
+
+vim.g.fzf_layout = { down = '40%' }
+vim.g.fzf_preview_window = { 'right:50%' }
