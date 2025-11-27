@@ -410,4 +410,5 @@ vim.keymap.set('n', '<leader>g', ':Git<cr>')
 generate_compile_flags_from_vscode(false)
 
 vim.g.fzf_layout = { down = '40%' }
-vim.g.fzf_preview_window = { 'right:50%' }
+vim.api.nvim_create_user_command('W', ':w', { desc = 'Save file with capslock on' })
+
