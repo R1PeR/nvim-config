@@ -84,7 +84,6 @@ require('lazy').setup {
         config = function()
             require('mini.icons').setup {}
         end,
-        cond = not vim.g.vscode,
     },
     {
         'nvim-mini/mini.move',
@@ -173,7 +172,6 @@ require('lazy').setup {
                 },
             }
         end,
-        cond = not vim.g.vscode,
     },
     { -- Highlight, edit, and navigate code
         'nvim-treesitter/nvim-treesitter',
@@ -256,12 +254,10 @@ require('lazy').setup {
     },
     {
         'tpope/vim-fugitive',
-        cond = not vim.g.vscode,
     },
     {
         'junegunn/fzf',
         'junegunn/fzf.vim',
-        cond = not vim.g.vscode,
     }
 }
 
