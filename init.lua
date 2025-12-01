@@ -84,6 +84,7 @@ require('lazy').setup {
         config = function()
             require('mini.icons').setup {}
         end,
+        cond = not vim.g.vscode,
     },
     {
         'nvim-mini/mini.move',
@@ -119,6 +120,7 @@ require('lazy').setup {
         config = function()
             require('mini.statusline').setup {}
         end,
+        cond = not vim.g.vscode,
     },
     {
         'pogyomo/winresize.nvim',
@@ -171,6 +173,7 @@ require('lazy').setup {
                 },
             }
         end,
+        cond = not vim.g.vscode,
     },
     { -- Highlight, edit, and navigate code
         'nvim-treesitter/nvim-treesitter',
@@ -253,10 +256,12 @@ require('lazy').setup {
     },
     {
         'tpope/vim-fugitive',
+        cond = not vim.g.vscode,
     },
     {
         'junegunn/fzf',
         'junegunn/fzf.vim',
+        cond = not vim.g.vscode,
     }
 }
 
@@ -393,7 +398,7 @@ vim.keymap.set('n', '<S-Down>', resize(0, 2, 'down'))
 vim.keymap.set('n', '<S-Up>', resize(0, 2, 'up'))
 vim.keymap.set('n', '<S-Right>', resize(0, 2, 'right'))
 
-vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize10<cr>')
+vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize20<cr>')
 vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 
 vim.keymap.set('n', '<leader>q', ':cwindow<cr>')
@@ -411,4 +416,5 @@ generate_compile_flags_from_vscode(false)
 
 vim.g.fzf_layout = { down = '40%' }
 vim.api.nvim_create_user_command('W', ':w', { desc = 'Save file with capslock on' })
+vim.api.nvim_create_user_command('Q', ':q', { desc = 'Quit file with capslock on' })
 
