@@ -119,11 +119,13 @@ require('lazy').setup {
         config = function()
             require('mini.statusline').setup {}
         end,
-        cond = not vim.g.vscode,
     },
     {
         'pogyomo/winresize.nvim',
+    },
+    {
         'Mofiqul/vscode.nvim',
+        'RostislavArts/naysayer.nvim',
     },
     { -- Adds git related signs to the gutter, as well as utilities for managing changes
         'lewis6991/gitsigns.nvim',
@@ -258,7 +260,7 @@ require('lazy').setup {
     {
         'junegunn/fzf',
         'junegunn/fzf.vim',
-    }
+    },
 }
 
 vim.api.nvim_create_autocmd('User', {
@@ -347,8 +349,7 @@ end
 
 --theme
 vim.opt.background = 'dark'
-vim.cmd.colorscheme 'vscode'
-vim.opt.guifont = '0xProto Nerd Font Mono:h12'
+vim.cmd.colorscheme 'naysayer'
 
 --basic keymaps
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -413,4 +414,3 @@ generate_compile_flags_from_vscode(false)
 vim.g.fzf_layout = { down = '40%' }
 vim.api.nvim_create_user_command('W', ':w', { desc = 'Save file with capslock on' })
 vim.api.nvim_create_user_command('Q', ':q', { desc = 'Quit file with capslock on' })
-
