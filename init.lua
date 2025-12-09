@@ -58,6 +58,13 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
+vim.opt.fillchars = {
+    fold = ' ',
+}
+vim.opt.foldmethod = 'indent'
+vim.opt.foldlevel = 99
+vim.opt.foldenable = true
+
 vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight when yanking (copying) text',
     group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -260,6 +267,7 @@ require('lazy').setup {
     {
         'junegunn/fzf',
         'junegunn/fzf.vim',
+        'tracyone/fzf-funky',
     },
 }
 
@@ -402,6 +410,7 @@ vim.keymap.set('n', '<leader>q', ':cwindow<cr>')
 vim.keymap.set('n', '<leader>d', ':bd<cr>')
 vim.keymap.set('n', '<leader>sf', ':Files<cr>')
 vim.keymap.set('n', '<leader>sg', ':RG<cr>')
+vim.keymap.set('n', '<leader>su', ':FzfFunky<cr>')
 vim.keymap.set('n', '<leader><leader>', ':Buffers<cr>')
 vim.keymap.set('n', '<leader>sh', ':Helptags<cr>')
 vim.keymap.set('n', '<leader>gc', function()
