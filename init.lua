@@ -62,8 +62,9 @@ vim.opt.fillchars = {
     fold = ' ',
 }
 vim.opt.foldmethod = 'indent'
-vim.opt.foldlevel = 99
+vim.opt.foldlevel = 0
 vim.opt.foldenable = true
+vim.opt.foldnestmax = 1
 
 vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight when yanking (copying) text',
