@@ -356,6 +356,43 @@ generate_compile_flags_from_vscode = function(force)
     vim.api.nvim_feedkeys(keys, 'm', false)
 end
 
+vim.cmd([[
+  function! FzfProjectSink(path)
+    execute 'cd ' . a:path
+    silent! bufdo bwipeout!
+    enew
+  endfunction
+]])
+
+vim.cmd([[
+  function! FzfChangeProject(cmd)
+
+    let l:cwd = getcwd()
+    let l:drive = matchstr(l:cwd, '^([A-Za-z]:)')
+    let l:find_command = 'fd --type d --full-path "" ' . l:drive . '/'
+    "let l:cleanup_sink = 'cd | silent! bufdo bwipeout!'
+    call fzf#run(fzf#wrap({
+      \ 'source': l:find_command,
+      \ 'sink': function('FzfProjectSink'),
+      \ 'options': '--prompt="Select Folder > "'
+      \ }))
+  endfunction
+]])
+
+-- vim.cmd('bufdo bwipeout!')
+-- Define the user command that calls the function
+vim.api.nvim_create_user_command(
+    'CDProject',                 -- The name of the Neovim command (e.g., :CDProject)
+    'call FzfChangeProject("")',  -- The Vimscript to execute
+    {
+        desc = 'Fuzzy-find and change to a new project directory',
+        bang = false,
+        nargs = 0, -- Takes no arguments
+    }
+)
+
+-- Optional: Create a quick key mapping for the new command
+vim.keymap.set('n', '<leader>cp', '<cmd>CDProject<CR>', { desc = '[C]hange [P]roject Directory' })
 --theme
 vim.opt.background = 'dark'
 vim.cmd.colorscheme 'naysayer'
@@ -418,6 +455,7 @@ vim.keymap.set('n', '<leader>gc', function()
     generate_compile_flags_from_vscode(true)
 end)
 vim.keymap.set('n', '<leader>g', ':Git<cr>')
+vim.keymap.set('n', '<leader>c', ':CDProject<cr>')
 
 generate_compile_flags_from_vscode(false)
 
