@@ -48,7 +48,7 @@ vim.opt.confirm = true
 vim.opt.grepprg = 'rg --vimgrep'
 vim.opt.grepformat = '%f:%l:%c:%m'
 
-vim.opt.shell = 'bash'
+vim.opt.shell = 'bash -l'
 vim.opt.shellcmdflag = '-c'
 vim.opt.shellslash = true
 vim.opt.shellxquote = ''
