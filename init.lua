@@ -7,6 +7,7 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.have_nerd_font = true
 vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
+vim.g.neovide_cursor_animation_length = 0
 vim.o.guifont = "Consolas Nerd Font:h11" 
 
 vim.opt.number = true
