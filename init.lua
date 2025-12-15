@@ -7,6 +7,7 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.have_nerd_font = true
 vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
+vim.o.guifont = "Consolas Nerd Font:h11" 
 
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -462,3 +463,5 @@ generate_compile_flags_from_vscode(false)
 vim.g.fzf_layout = { down = '40%' }
 vim.api.nvim_create_user_command('W', ':w', { desc = 'Save file with capslock on' })
 vim.api.nvim_create_user_command('Q', ':q', { desc = 'Quit file with capslock on' })
+
+
