@@ -137,6 +137,8 @@ require('lazy').setup {
     {
         'Mofiqul/vscode.nvim',
         'RostislavArts/naysayer.nvim',
+        'rebelot/kanagawa.nvim'
+
     },
     { -- Adds git related signs to the gutter, as well as utilities for managing changes
         'lewis6991/gitsigns.nvim',
@@ -398,7 +400,7 @@ vim.api.nvim_create_user_command(
 vim.keymap.set('n', '<leader>cp', '<cmd>CDProject<CR>', { desc = '[C]hange [P]roject Directory' })
 --theme
 vim.opt.background = 'dark'
-vim.cmd.colorscheme 'naysayer'
+vim.cmd.colorscheme 'kanagawa'
 
 --basic keymaps
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
