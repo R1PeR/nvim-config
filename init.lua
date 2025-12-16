@@ -9,6 +9,7 @@ vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
 vim.g.neovide_cursor_animation_length = 0
 vim.o.guifont = "Consolas Nerd Font:h11" 
+vim.g.neovide_scroll_animation_length = 0.1
 
 vim.opt.number = true
 vim.opt.relativenumber = true
