@@ -50,7 +50,8 @@ vim.opt.confirm = true
 vim.opt.grepprg = 'rg --vimgrep'
 vim.opt.grepformat = '%f:%l:%c:%m'
 
-vim.opt.shell = 'bash -l'
+--vim.opt.shell = 'bash -l'
+vim.opt.shell = 'msys2_shell.cmd -defterm -here -no-start -mingw64 -use-full-path'
 vim.opt.shellcmdflag = '-c'
 vim.opt.shellslash = true
 vim.opt.shellxquote = ''
@@ -371,7 +372,7 @@ vim.cmd([[
 
     let l:cwd = getcwd()
     let l:drive = matchstr(l:cwd, '^([A-Za-z]:)')
-    let l:find_command = 'fd --type d --full-path "" ' . l:drive . '/'
+    let l:find_command = 'fd --type d --hidden --full-path "" ' . l:drive . '/'
     "let l:cleanup_sink = 'cd | silent! bufdo bwipeout!'
     call fzf#run(fzf#wrap({
       \ 'source': l:find_command,
