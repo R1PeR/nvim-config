@@ -8,7 +8,7 @@ vim.g.have_nerd_font = true
 vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
 vim.g.neovide_cursor_animation_length = 0
-vim.o.guifont = "Consolas Nerd Font:h11" 
+vim.o.guifont = 'Consolas Nerd Font:h11'
 vim.g.neovide_scroll_animation_length = 0.1
 
 vim.opt.number = true
@@ -138,8 +138,6 @@ require('lazy').setup {
     {
         'Mofiqul/vscode.nvim',
         'RostislavArts/naysayer.nvim',
-        'rebelot/kanagawa.nvim'
-
     },
     { -- Adds git related signs to the gutter, as well as utilities for managing changes
         'lewis6991/gitsigns.nvim',
@@ -206,7 +204,7 @@ require('lazy').setup {
 
             auto_install = true,
             highlight = {
-                enable = true,
+                enable = false,
             },
             indent = { enable = false },
         },
@@ -362,15 +360,15 @@ generate_compile_flags_from_vscode = function(force)
     vim.api.nvim_feedkeys(keys, 'm', false)
 end
 
-vim.cmd([[
+vim.cmd [[
   function! FzfProjectSink(path)
     execute 'cd ' . a:path
     silent! bufdo bwipeout!
     enew
   endfunction
-]])
+]]
 
-vim.cmd([[
+vim.cmd [[
   function! FzfChangeProject(cmd)
 
     let l:cwd = getcwd()
@@ -383,13 +381,13 @@ vim.cmd([[
       \ 'options': '--prompt="Select Folder > "'
       \ }))
   endfunction
-]])
+]]
 
 -- vim.cmd('bufdo bwipeout!')
 -- Define the user command that calls the function
 vim.api.nvim_create_user_command(
-    'CDProject',                 -- The name of the Neovim command (e.g., :CDProject)
-    'call FzfChangeProject("")',  -- The Vimscript to execute
+    'CDProject', -- The name of the Neovim command (e.g., :CDProject)
+    'call FzfChangeProject("")', -- The Vimscript to execute
     {
         desc = 'Fuzzy-find and change to a new project directory',
         bang = false,
@@ -401,7 +399,7 @@ vim.api.nvim_create_user_command(
 vim.keymap.set('n', '<leader>cp', '<cmd>CDProject<CR>', { desc = '[C]hange [P]roject Directory' })
 --theme
 vim.opt.background = 'dark'
-vim.cmd.colorscheme 'kanagawa'
+vim.cmd.colorscheme 'naysayer'
 
 --basic keymaps
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -468,5 +466,3 @@ generate_compile_flags_from_vscode(false)
 vim.g.fzf_layout = { down = '40%' }
 vim.api.nvim_create_user_command('W', ':w', { desc = 'Save file with capslock on' })
 vim.api.nvim_create_user_command('Q', ':q', { desc = 'Quit file with capslock on' })
-
-
