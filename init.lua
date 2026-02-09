@@ -338,6 +338,9 @@ vim.diagnostic.config {
     },
 }
 --custom commmands
+local term_buf = nil
+local term_win = nil
+
 local resize = function(win, amt, dir)
     return function()
         require('winresize').resize(win, amt, dir)
@@ -364,6 +367,8 @@ vim.cmd [[
   function! FzfProjectSink(path)
     execute 'cd ' . a:path
     silent! bufdo bwipeout!
+    term_win = nil
+    term_buf = nil
     enew
   endfunction
 ]]
@@ -395,25 +400,21 @@ vim.api.nvim_create_user_command(
     }
 )
 
-local term_buf = nil
-local term_win = nil
-
 function ToggleTerminal()
-  if term_win and vim.api.nvim_win_is_valid(term_win) then
-    vim.api.nvim_win_hide(term_win)
-    term_win = nil
-  else
-    if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
-      vim.cmd("botright sbuf " .. term_buf)
+    if term_win and vim.api.nvim_win_is_valid(term_win) then
+        vim.api.nvim_win_hide(term_win)
+        term_win = nil
     else
-      vim.cmd("botright split | term")
-      term_buf = vim.api.nvim_get_current_buf()
+        if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+            vim.cmd('botright sbuf ' .. term_buf)
+        else
+            vim.cmd 'botright split | term'
+            term_buf = vim.api.nvim_get_current_buf()
+        end
+        term_win = vim.api.nvim_get_current_win()
+        vim.cmd 'startinsert'
     end
-    term_win = vim.api.nvim_get_current_win()
-    vim.cmd("startinsert")
-  end
 end
-
 
 -- Optional: Create a quick key mapping for the new command
 vim.keymap.set('n', '<leader>cp', '<cmd>CDProject<CR>')
