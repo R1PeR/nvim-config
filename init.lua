@@ -395,15 +395,35 @@ vim.api.nvim_create_user_command(
     }
 )
 
+local term_buf = nil
+local term_win = nil
+
+function ToggleTerminal()
+  if term_win and vim.api.nvim_win_is_valid(term_win) then
+    vim.api.nvim_win_hide(term_win)
+    term_win = nil
+  else
+    if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+      vim.cmd("botright sbuf " .. term_buf)
+    else
+      vim.cmd("botright split | term")
+      term_buf = vim.api.nvim_get_current_buf()
+    end
+    term_win = vim.api.nvim_get_current_win()
+    vim.cmd("startinsert")
+  end
+end
+
+
 -- Optional: Create a quick key mapping for the new command
-vim.keymap.set('n', '<leader>cp', '<cmd>CDProject<CR>', { desc = '[C]hange [P]roject Directory' })
+vim.keymap.set('n', '<leader>cp', '<cmd>CDProject<CR>')
 --theme
 vim.opt.background = 'dark'
 vim.cmd.colorscheme 'naysayer'
 
 --basic keymaps
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>')
 
 --movement keymaps
 vim.keymap.set('n', '<c-w><c-left>', '<c-w><c-h>')
@@ -445,7 +465,7 @@ vim.keymap.set('n', '<S-Down>', resize(0, 2, 'down'))
 vim.keymap.set('n', '<S-Up>', resize(0, 2, 'up'))
 vim.keymap.set('n', '<S-Right>', resize(0, 2, 'right'))
 
-vim.keymap.set('n', '<leader>t', ':sp<bar>term<cr><c-w>J:resize20<cr>')
+vim.keymap.set('n', '<leader>t', ToggleTerminal)
 vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 
 vim.keymap.set('n', '<leader>q', ':cwindow<cr>')
