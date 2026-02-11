@@ -419,8 +419,47 @@ end
 -- Optional: Create a quick key mapping for the new command
 vim.keymap.set('n', '<leader>cp', '<cmd>CDProject<CR>')
 --theme
-vim.opt.background = 'dark'
-vim.cmd.colorscheme 'naysayer'
+
+local color_1 = "Green"
+local color_2 = "Blue"
+local color_3 = "Blue"
+local color_4 = "Red"
+local color_5 = "Yellow"
+local color_background = "#e0e0e0"
+local color_foreground = "Black"
+
+vim.opt.background = 'light'
+vim.cmd.colorscheme 'quiet'
+vim.api.nvim_set_hl(0, 'Normal', { fg = color_foreground, bg = color_background })
+vim.api.nvim_set_hl(0, "LineNr", { fg = color_foreground })
+
+vim.api.nvim_set_hl(0, 'Comment', { fg = color_1 })
+vim.api.nvim_set_hl(0, "String", { fg = color_1 })
+vim.api.nvim_set_hl(0, "Character", { fg = color_1 })
+
+vim.api.nvim_set_hl(0, "Conditional", { fg = color_2 })
+vim.api.nvim_set_hl(0, "Repeat", { fg = color_2 })
+vim.api.nvim_set_hl(0, "Label", { fg = color_2 })
+vim.api.nvim_set_hl(0, "MatchParen", { fg = color_2, bold = true })
+vim.api.nvim_set_hl(0, "Exception", { fg = color_2 })
+vim.api.nvim_set_hl(0, "Statement", { fg = color_2 })
+vim.api.nvim_set_hl(0, "Keyword", { fg = color_2 })
+
+vim.api.nvim_set_hl(0, "Type", { fg = color_3 })
+vim.api.nvim_set_hl(0, "StorageClass", { fg = color_3 })
+vim.api.nvim_set_hl(0, "Structure", { fg = color_3 })
+vim.api.nvim_set_hl(0, "Typedef", { fg = color_3 })
+
+vim.api.nvim_set_hl(0, "PreProc", { fg = color_3 })
+vim.api.nvim_set_hl(0, "Include", { fg = color_3 })
+vim.api.nvim_set_hl(0, "Define", { fg = color_3 })
+vim.api.nvim_set_hl(0, "Macro", { fg = color_3 })
+vim.api.nvim_set_hl(0, "PreCondit", { fg = color_3 })
+
+vim.api.nvim_set_hl(0, "Todo", { fg = color_4 })
+vim.api.nvim_set_hl(0, "Error", { fg = color_4 })
+
+vim.api.nvim_set_hl(0, "Visual", { bg = color_5 })
 
 --basic keymaps
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
