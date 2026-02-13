@@ -8,7 +8,7 @@ vim.g.have_nerd_font = true
 vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
 vim.g.neovide_cursor_animation_length = 0
-vim.o.guifont = 'Consolas Nerd Font:h11'
+vim.o.guifont = 'MartianMono Nerd Font:h9'
 vim.g.neovide_scroll_animation_length = 0.1
 
 vim.opt.number = true
@@ -135,10 +135,10 @@ require('lazy').setup {
     {
         'pogyomo/winresize.nvim',
     },
-    {
-        'Mofiqul/vscode.nvim',
-        'RostislavArts/naysayer.nvim',
-    },
+    -- {
+    -- 'Mofiqul/vscode.nvim',
+    -- 'RostislavArts/naysayer.nvim',
+    -- },
     { -- Adds git related signs to the gutter, as well as utilities for managing changes
         'lewis6991/gitsigns.nvim',
         opts = {
@@ -420,47 +420,48 @@ end
 vim.keymap.set('n', '<leader>cp', '<cmd>CDProject<CR>')
 --theme
 
-local color_1 = "Green"
-local color_2 = "Blue"
-local color_3 = "Blue"
-local color_4 = "Red"
-local color_5 = "Yellow"
-local color_background = "#e0e0e0"
-local color_foreground = "Black"
-
 vim.opt.background = 'light'
 vim.cmd.colorscheme 'quiet'
-vim.api.nvim_set_hl(0, 'Normal', { fg = color_foreground, bg = color_background })
-vim.api.nvim_set_hl(0, "LineNr", { fg = color_foreground })
 
-vim.api.nvim_set_hl(0, 'Comment', { fg = color_1 })
-vim.api.nvim_set_hl(0, "String", { fg = color_1 })
-vim.api.nvim_set_hl(0, "Character", { fg = color_1 })
+if vim.g.colors_name == 'quiet' then
+    local color_1 = 'Green'
+    local color_2 = 'Blue'
+    local color_3 = 'Blue'
+    local color_4 = 'Red'
+    local color_5 = 'Yellow'
+    local color_background = 'LightGray'
+    local color_foreground = 'Black'
+    vim.api.nvim_set_hl(0, 'Normal', { fg = color_foreground, bg = color_background })
+    vim.api.nvim_set_hl(0, 'LineNr', { fg = color_foreground })
 
-vim.api.nvim_set_hl(0, "Conditional", { fg = color_2 })
-vim.api.nvim_set_hl(0, "Repeat", { fg = color_2 })
-vim.api.nvim_set_hl(0, "Label", { fg = color_2 })
-vim.api.nvim_set_hl(0, "MatchParen", { fg = color_2, bold = true })
-vim.api.nvim_set_hl(0, "Exception", { fg = color_2 })
-vim.api.nvim_set_hl(0, "Statement", { fg = color_2 })
-vim.api.nvim_set_hl(0, "Keyword", { fg = color_2 })
+    vim.api.nvim_set_hl(0, 'Comment', { fg = color_1 })
+    vim.api.nvim_set_hl(0, 'String', { fg = color_1 })
+    vim.api.nvim_set_hl(0, 'Character', { fg = color_1 })
 
-vim.api.nvim_set_hl(0, "Type", { fg = color_3 })
-vim.api.nvim_set_hl(0, "StorageClass", { fg = color_3 })
-vim.api.nvim_set_hl(0, "Structure", { fg = color_3 })
-vim.api.nvim_set_hl(0, "Typedef", { fg = color_3 })
+    vim.api.nvim_set_hl(0, 'Conditional', { fg = color_2 })
+    vim.api.nvim_set_hl(0, 'Repeat', { fg = color_2 })
+    vim.api.nvim_set_hl(0, 'Label', { fg = color_2 })
+    vim.api.nvim_set_hl(0, 'MatchParen', { fg = color_2, bold = true })
+    vim.api.nvim_set_hl(0, 'Exception', { fg = color_2 })
+    vim.api.nvim_set_hl(0, 'Statement', { fg = color_2 })
+    vim.api.nvim_set_hl(0, 'Keyword', { fg = color_2 })
 
-vim.api.nvim_set_hl(0, "PreProc", { fg = color_3 })
-vim.api.nvim_set_hl(0, "Include", { fg = color_3 })
-vim.api.nvim_set_hl(0, "Define", { fg = color_3 })
-vim.api.nvim_set_hl(0, "Macro", { fg = color_3 })
-vim.api.nvim_set_hl(0, "PreCondit", { fg = color_3 })
+    vim.api.nvim_set_hl(0, 'Type', { fg = color_3 })
+    vim.api.nvim_set_hl(0, 'StorageClass', { fg = color_3 })
+    vim.api.nvim_set_hl(0, 'Structure', { fg = color_3 })
+    vim.api.nvim_set_hl(0, 'Typedef', { fg = color_3 })
 
-vim.api.nvim_set_hl(0, "Todo", { fg = color_4 })
-vim.api.nvim_set_hl(0, "Error", { fg = color_4 })
+    vim.api.nvim_set_hl(0, 'PreProc', { fg = color_3 })
+    vim.api.nvim_set_hl(0, 'Include', { fg = color_3 })
+    vim.api.nvim_set_hl(0, 'Define', { fg = color_3 })
+    vim.api.nvim_set_hl(0, 'Macro', { fg = color_3 })
+    vim.api.nvim_set_hl(0, 'PreCondit', { fg = color_3 })
 
-vim.api.nvim_set_hl(0, "Visual", { bg = color_5 })
+    vim.api.nvim_set_hl(0, 'Todo', { fg = color_4 })
+    vim.api.nvim_set_hl(0, 'Error', { fg = color_4 })
 
+    vim.api.nvim_set_hl(0, 'Visual', { bg = color_foreground, fg = color_background })
+end
 --basic keymaps
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>')
