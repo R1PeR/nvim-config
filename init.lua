@@ -274,6 +274,12 @@ require('lazy').setup {
         'junegunn/fzf.vim',
         'tracyone/fzf-funky',
     },
+    -- {
+    --     'smit4k/shale.nvim',
+    --     'kungfusheep/mfd.nvim',
+    --     'valonmulolli/heap.nvim',
+    --     'morhetz/gruvbox',
+    -- },
 }
 
 vim.api.nvim_create_autocmd('User', {
@@ -420,10 +426,10 @@ end
 vim.keymap.set('n', '<leader>cp', '<cmd>CDProject<CR>')
 --theme
 
-vim.opt.background = 'light'
-vim.cmd.colorscheme 'quiet'
+vim.cmd.colorscheme 'retrobox'
 
 if vim.g.colors_name == 'quiet' then
+    vim.opt.background = 'light'
     local color_1 = 'Green'
     local color_2 = 'Blue'
     local color_3 = 'Blue'
@@ -521,6 +527,7 @@ vim.keymap.set('n', '<leader>gc', function()
 end)
 vim.keymap.set('n', '<leader>g', ':Git<cr>')
 vim.keymap.set('n', '<leader>c', ':CDProject<cr>')
+vim.keymap.set('n', '<leader>i', ':e ~/todo.md<cr>')
 
 generate_compile_flags_from_vscode(false)
 
