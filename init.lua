@@ -57,8 +57,6 @@ vim.schedule(function()
     vim.opt.clipboard = 'unnamedplus'
 end)
 
-vim.opt.path:append '**'
-
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
@@ -167,6 +165,8 @@ function ToggleTerminal()
     end
 end
 
+-- vim.pack.del({'blink.cmp'})
+
 vim.pack.add {
     'https://github.com/stevearc/oil.nvim',
     'https://github.com/stevearc/conform.nvim',
@@ -176,7 +176,11 @@ vim.pack.add {
         version = 'v1.52.0',
     },
     'https://github.com/nvim-treesitter/nvim-treesitter',
-    'https://github.com/ibhagwan/fzf-lua'
+    'https://github.com/ibhagwan/fzf-lua',
+    {
+        src = 'https://github.com/Saghen/blink.cmp',
+        version = 'v1.10.1',
+    },
 }
 
 require('oil').setup {
@@ -221,6 +225,52 @@ require('fzf-lua').setup({
     },
 })
 
+require('blink.cmp').setup {
+    auto_trigger = true,
+    debounce = 150,
+    keymap = {
+        preset = 'none',
+        ['<CR>'] = { 'accept', 'fallback' },
+        ['<Tab>'] = { 'accept', 'fallback' },
+        ['<Up>'] = { 'select_prev', 'fallback' },
+        ['<Down>'] = { 'select_next', 'fallback' },
+    },
+    completion = {
+        documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        trigger = {
+            prefetch_on_insert = true,
+        },
+        ghost_text = { enabled = true },
+        list = { selection = { preselect = false, auto_insert = true } },
+    },
+
+    sources = {
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+    },
+
+    appearance = {
+        use_nvim_cmp_as_default = false,
+        nerd_font_variant = 'mono',
+    },
+
+    fuzzy = { implementation = 'prefer_rust_with_warning' },
+    signature = { enabled = true },
+}
+
+vim.api.nvim_create_autocmd('User', {
+    pattern = 'BlinkCmpMenuOpen',
+    callback = function()
+        vim.b.copilot_hide_during_completion = 0
+    end,
+})
+
+vim.api.nvim_create_autocmd('User', {
+    pattern = 'BlinkCmpMenuClose',
+    callback = function()
+        vim.b.copilot_hide_during_completion = 1
+    end,
+})
+
 function Format()
     require('conform').format { async = true, lsp_format = 'fallback' }
 end
@@ -250,7 +300,7 @@ end
 vim.keymap.set('n', '<leader>sf', ':FzfLua files<cr>')
 vim.keymap.set('n', '<leader>sg', ':FzfLua live_grep<cr>')
 vim.keymap.set('n', '<leader>c', FzfChangeDirectory)
-vim.keymap.set('n', '<leader><leader>', ':FzfLua buffer<cr>')
+vim.keymap.set('n', '<leader><leader>', ':FzfLua buffers<cr>')
 vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 vim.keymap.set('n', '<leader>g', 'Git<cr')
 vim.keymap.set('n', '<leader>t', ToggleTerminal)
