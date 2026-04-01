@@ -223,4 +223,4 @@ vim.keymap.set('n', '<leader>f', Format)
 vim.keymap.set('v', '<leader>f', Format)
 
 vim.cmd.colorscheme 'quiet'
-vim.opt.background = 'darkt<cr'
+vim.opt.background = 'dark'
