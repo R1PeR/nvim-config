@@ -51,6 +51,7 @@ vim.opt.updatetime = 250
 vim.opt.timeoutlen = 300
 vim.opt.splitright = true
 vim.opt.splitbelow = true
+vim.opt.iskeyword:remove("_")
 
 vim.schedule(function()
     vim.opt.clipboard = 'unnamedplus'
@@ -175,6 +176,7 @@ vim.pack.add {
         version = 'v1.52.0',
     },
     'https://github.com/nvim-treesitter/nvim-treesitter',
+    'https://github.com/ibhagwan/fzf-lua'
 }
 
 require('oil').setup {
@@ -208,14 +210,47 @@ require('nvim-treesitter').setup{
     indent = { enable = false },
 }
 
+require('fzf-lua').setup({
+    winopts = {
+        height  = 0.30,   -- 30% screen height
+        width   = 1.00,   -- Full width
+        row     = 1.00,   -- Stick to bottom
+        col     = 0.00,
+        -- border  = 'none', -- Minimalist look
+        preview = {hidden = true}, -- Disable preview window
+    },
+})
+
 function Format()
     require('conform').format { async = true, lsp_format = 'fallback' }
 end
 
-vim.keymap.set('n', '<leader>sf', ':find ')
-vim.keymap.set('n', '<leader>sg', ':grep ')
-vim.keymap.set('n', '<leader>c', ':cd ')
-vim.keymap.set('n', '<leader><leader>', ':buffer ')
+function FzfChangeDirectory()
+    local fzf = require("fzf-lua")
+
+    cwd = vim.fn.getcwd()
+    drive = vim.fn.matchstr(cwd, '^([A-Za-z]:)')
+    if drive == "" then drive = "/" end
+    local find_command = "fd --type d --hidden --exclude .git --color=never . " .. drive
+    fzf.fzf_exec(find_command , {
+        prompt = "Change Directory> ",
+        actions = {
+            ["default"] = function(selected)
+                -- selected[1] is the path string
+                local path = selected[1]
+                if path then
+                    vim.cmd("cd " .. path)
+                    print("CWD changed to: " .. vim.fn.getcwd())
+                end
+            end,
+        },
+    })
+end
+
+vim.keymap.set('n', '<leader>sf', ':FzfLua files<cr>')
+vim.keymap.set('n', '<leader>sg', ':FzfLua live_grep<cr>')
+vim.keymap.set('n', '<leader>c', FzfChangeDirectory)
+vim.keymap.set('n', '<leader><leader>', ':FzfLua buffer<cr>')
 vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 vim.keymap.set('n', '<leader>g', 'Git<cr')
 vim.keymap.set('n', '<leader>t', ToggleTerminal)
