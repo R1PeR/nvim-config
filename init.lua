@@ -284,3 +284,12 @@ vim.keymap.set('n', '<S-Up>', resize(0, 2, 'up'))
 vim.keymap.set('n', '<S-Right>', resize(0, 2, 'right'))
 vim.keymap.set('n', '<c-up>', '<c-u>')
 vim.keymap.set('n', '<c-down>', '<c-d>')
+
+local fontSize = 11
+function adjustFontSize(delta)
+    fontSize = fontSize + delta 
+    vim.opt.guifont = 'MartianMono Nerd Font:h' .. fontSize
+end
+
+vim.keymap.set('n', '<PageDown>', function() adjustFontSize(1) end)
+vim.keymap.set('n', '<PageUp>', function() adjustFontSize(-1) end)
