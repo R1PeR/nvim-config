@@ -232,6 +232,10 @@ function FzfChangeDirectory()
                 if path then
                     vim.cmd("cd " .. path)
                     print("CWD changed to: " .. vim.fn.getcwd())
+                    vim.cmd('silent! bufdo bwipeout!')
+                    term_win = nil
+                    term_buf = nil
+                    vim.cmd('enew') 
                 end
             end,
         },
