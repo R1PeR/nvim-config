@@ -51,8 +51,8 @@ vim.opt.updatetime = 250
 vim.opt.timeoutlen = 300
 vim.opt.splitright = true
 vim.opt.splitbelow = true
-vim.opt.iskeyword:remove("_")
-vim.opt.wildoptions:append('fuzzy')
+vim.opt.iskeyword:remove '_'
+vim.opt.wildoptions:append 'fuzzy'
 vim.opt.autocomplete = true
 vim.opt.autocompletedelay = 500
 
@@ -65,15 +65,15 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 vim.opt.inccommand = 'split'
 
-vim.opt.wildignore:append { 
-  "*/node_modules/*", 
-  "*/.git/*", 
-  "*/.vscode/*", 
-  "*/build/*", 
-  "*/dist/*", 
-  "*.o", 
-  "*.obj", 
-  "*.d" 
+vim.opt.wildignore:append {
+    '*/node_modules/*',
+    '*/.git/*',
+    '*/.vscode/*',
+    '*/build/*',
+    '*/dist/*',
+    '*.o',
+    '*.obj',
+    '*.d',
 }
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -164,10 +164,7 @@ vim.pack.add {
     },
     'https://github.com/nvim-treesitter/nvim-treesitter',
     'https://github.com/ibhagwan/fzf-lua',
-    -- {
-    --     src = 'https://github.com/Saghen/blink.cmp',
-    --     version = 'v1.10.1',
-    -- },
+    'https://github.com/pogyomo/winresize.nvim',
 }
 
 require('oil').setup {
@@ -185,7 +182,7 @@ require('conform').setup {
     },
 }
 
-require('nvim-treesitter').setup{
+require('nvim-treesitter').setup {
     ensure_installed = {
         'bash',
         'c',
@@ -201,41 +198,42 @@ require('nvim-treesitter').setup{
     indent = { enable = false },
 }
 
-require('fzf-lua').setup({
+require('fzf-lua').setup {
     winopts = {
-        height  = 0.30,   -- 30% screen height
-        width   = 1.00,   -- Full width
-        row     = 1.00,   -- Stick to bottom
-        col     = 0.00,
-        -- border  = 'none', -- Minimalist look
-        preview = {hidden = true}, -- Disable preview window
+        height = 0.30, -- 30% screen height
+        width = 1.00, -- Full width
+        row = 1.00, -- Stick to bottom
+        col = 0.00,
+        preview = { hidden = true }, -- Disable preview window
     },
-})
+}
 
 function Format()
     require('conform').format { async = true, lsp_format = 'fallback' }
 end
 
 function FzfChangeDirectory()
-    local fzf = require("fzf-lua")
+    local fzf = require 'fzf-lua'
 
     cwd = vim.fn.getcwd()
     drive = vim.fn.matchstr(cwd, '^([A-Za-z]:)')
-    if drive == "" then drive = "/" end
-    local find_command = "fd --type d --hidden --exclude .git --color=never . " .. drive
-    fzf.fzf_exec(find_command , {
-        prompt = "Change Directory> ",
+    if drive == '' then
+        drive = '/'
+    end
+    local find_command = 'fd --type d --hidden --exclude .git --color=never . ' .. drive
+    fzf.fzf_exec(find_command, {
+        prompt = 'Change Directory> ',
         actions = {
-            ["default"] = function(selected)
+            ['default'] = function(selected)
                 -- selected[1] is the path string
                 local path = selected[1]
                 if path then
-                    vim.cmd("cd " .. path)
-                    print("CWD changed to: " .. vim.fn.getcwd())
-                    vim.cmd('silent! bufdo bwipeout!')
+                    vim.cmd('cd ' .. path)
+                    print('CWD changed to: ' .. vim.fn.getcwd())
+                    vim.cmd 'silent! bufdo bwipeout!'
                     term_win = nil
                     term_buf = nil
-                    vim.cmd('enew') 
+                    vim.cmd 'enew'
                 end
             end,
         },
@@ -272,4 +270,17 @@ function getMode()
     return mode_map[mode] or mode
 end
 
-vim.opt.statusline = '[%{%v:lua.getMode()%}] [%n] %f %m %r %y %{&filetype}' 
+vim.opt.statusline = '[%{%v:lua.getMode()%}] [%n] %f %m %r'
+
+local resize = function(win, amt, dir)
+    return function()
+        require('winresize').resize(win, amt, dir)
+    end
+end
+
+vim.keymap.set('n', '<S-Left>', resize(0, 2, 'left'))
+vim.keymap.set('n', '<S-Down>', resize(0, 2, 'down'))
+vim.keymap.set('n', '<S-Up>', resize(0, 2, 'up'))
+vim.keymap.set('n', '<S-Right>', resize(0, 2, 'right'))
+vim.keymap.set('n', '<c-up>', '<c-u>')
+vim.keymap.set('n', '<c-down>', '<c-d>')
