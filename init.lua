@@ -250,12 +250,11 @@ function PickChangeDirectory()
 
     -- Determine the search root (Windows drive or root /)
     cwd = vim.fn.getcwd()
-    drive = vim.fn.matchstr(cwd, [[^\a:/]])
+    drive = cwd:sub(1,3)
+    -- drive = vim.fn.matchstr(cwd, [[^\a:/]])
     if drive == '' then
         drive = '/'
     end
-    print('Current drive: ' .. drive .. ' ' .. cwd)
-
     -- Define the source for mini.pick
     pick.start {
         source = {
