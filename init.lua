@@ -271,9 +271,6 @@ function PickChangeDirectory()
                 end
             end,
         },
-        window = {
-            config = { title = ' Change Directory ' },
-        },
     }
 end
 
