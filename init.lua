@@ -214,14 +214,14 @@ require('fzf-lua').setup {
 
 require('mini.move').setup {
     mappings = {
-        left = '<Alt-Left>',
-        right = '<Alt-Right>',
-        down = '<Alt-Down>',
-        up = '<Alt-Up>',
-        line_left = '<Alt-Left>',
-        line_right = '<Alt-Right>',
-        line_down = '<Alt-Down>',
-        line_up = '<Alt-Up>',
+        left = '<M-Left>',
+        right = '<M-Right>',
+        down = '<M-Down>',
+        up = '<M-Up>',
+        line_left = '<M-Left>',
+        line_right = '<M-Right>',
+        line_down = '<M-Down>',
+        line_up = '<M-Up>',
     },
 }
 
