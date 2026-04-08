@@ -165,6 +165,10 @@ vim.pack.add {
     'https://github.com/nvim-treesitter/nvim-treesitter',
     'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/pogyomo/winresize.nvim',
+    'https://github.com/nvim-mini/mini.surround',
+    'https://github.com/nvim-mini/mini.pairs',
+    'https://github.com/nvim-mini/mini.pick',
+    'https://github.com/nvim-mini/mini.move',
 }
 
 require('oil').setup {
@@ -208,42 +212,76 @@ require('fzf-lua').setup {
     },
 }
 
+require('mini.move').setup {
+    mappings = {
+        left = '<Alt-Left>',
+        right = '<Alt-Right>',
+        down = '<Alt-Down>',
+        up = '<Alt-Up>',
+        line_left = '<Alt-Left>',
+        line_right = '<Alt-Right>',
+        line_down = '<Alt-Down>',
+        line_up = '<Alt-Up>',
+    },
+}
+
+require('mini.surround').setup()
+require('mini.pairs').setup()
+require('mini.pick').setup {
+    window = {
+        config = function()
+            local height = math.floor(vim.o.lines / 2)
+            return {
+                anchor = 'NW',
+                height = height,
+                width = vim.o.columns,
+                row = vim.o.lines - height - 2,
+                col = 0,
+            }
+        end,
+    },
+}
 function Format()
     require('conform').format { async = true, lsp_format = 'fallback' }
 end
 
-function FzfChangeDirectory()
-    local fzf = require 'fzf-lua'
+function PickChangeDirectory()
+    local pick = require 'mini.pick'
 
+    -- Determine the search root (Windows drive or root /)
     cwd = vim.fn.getcwd()
-    drive = vim.fn.matchstr(cwd, '^([A-Za-z]:)')
+    drive = vim.fn.matchstr(cwd, [[^\a:/]])
     if drive == '' then
         drive = '/'
     end
-    local find_command = 'fd --type d --hidden --exclude .git --color=never . ' .. drive
-    fzf.fzf_exec(find_command, {
-        prompt = 'Change Directory> ',
-        actions = {
-            ['default'] = function(selected)
-                -- selected[1] is the path string
-                local path = selected[1]
-                if path then
-                    vim.cmd('cd ' .. path)
+    print('Current drive: ' .. drive .. ' ' .. cwd)
+
+    -- Define the source for mini.pick
+    pick.start {
+        source = {
+            name = 'Change Directory',
+            items = vim.fn.systemlist('fd --type d --hidden --exclude .git --color=never . ' .. drive),
+            choose = function(item)
+                if item then
+                    vim.cmd('cd ' .. item)
                     print('CWD changed to: ' .. vim.fn.getcwd())
                     vim.cmd 'silent! bufdo bwipeout!'
-                    term_win = nil
-                    term_buf = nil
+                    _G.term_win = nil
+                    _G.term_buf = nil
                     vim.cmd 'enew'
                 end
             end,
         },
-    })
+        window = {
+            config = { title = ' Change Directory ' },
+        },
+    }
 end
 
-vim.keymap.set('n', '<leader>sf', ':FzfLua files<cr>')
-vim.keymap.set('n', '<leader>sg', ':FzfLua live_grep<cr>')
-vim.keymap.set('n', '<leader>c', FzfChangeDirectory)
-vim.keymap.set('n', '<leader><leader>', ':FzfLua buffers<cr>')
+vim.keymap.set('n', '<leader>sf', ':Pick files<cr>')
+vim.keymap.set('n', '<leader>sg', ':Pick live_grep<cr>')
+vim.keymap.set('n', '<leader>c', PickChangeDirectory)
+vim.keymap.set('n', '<leader><leader>', ':Pick buffers<cr>')
 vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 vim.keymap.set('n', '<leader>g', ':Git<cr>')
 vim.keymap.set('n', '<leader>t', ToggleTerminal)
@@ -287,9 +325,13 @@ vim.keymap.set('n', '<c-down>', '<c-d>')
 
 local fontSize = 11
 function adjustFontSize(delta)
-    fontSize = fontSize + delta 
+    fontSize = fontSize + delta
     vim.opt.guifont = 'MartianMono Nerd Font:h' .. fontSize
 end
 
-vim.keymap.set('n', '<PageDown>', function() adjustFontSize(1) end)
-vim.keymap.set('n', '<PageUp>', function() adjustFontSize(-1) end)
+vim.keymap.set('n', '<PageDown>', function()
+    adjustFontSize(1)
+end)
+vim.keymap.set('n', '<PageUp>', function()
+    adjustFontSize(-1)
+end)
