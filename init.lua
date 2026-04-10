@@ -275,7 +275,7 @@ function PickChangeDirectory()
 end
 
 vim.keymap.set('n', '<leader>sf', ':Pick files<cr>')
-vim.keymap.set('n', '<leader>sg', ':Pick live_grep<cr>')
+vim.keymap.set('n', '<leader>sg', ':Pick grep_live<cr>')
 vim.keymap.set('n', '<leader>c', PickChangeDirectory)
 vim.keymap.set('n', '<leader><leader>', ':Pick buffers<cr>')
 vim.keymap.set('n', '<leader>e', ':Oil<cr>')
