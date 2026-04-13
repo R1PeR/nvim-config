@@ -247,23 +247,18 @@ end
 
 function PickChangeDirectory()
     local pick = require 'mini.pick'
+    local cwd = vim.fn.getcwd()
+    local drive = cwd:match '^%a:[\\/]' or '/'
+    local command_fd = { 'fd', '--type', 'd', '--hidden', '--exclude', '.git', '--color', 'never', '.', drive }
 
-    -- Determine the search root (Windows drive or root /)
-    cwd = vim.fn.getcwd()
-    drive = cwd:sub(1,3)
-    -- drive = vim.fn.matchstr(cwd, [[^\a:/]])
-    if drive == '' then
-        drive = '/'
-    end
-    -- Define the source for mini.pick
-    pick.start {
+    pick.builtin.cli({ command = command_fd }, {
         source = {
-            name = 'Change Directory',
-            items = vim.fn.systemlist('fd --type d --hidden --exclude .git --color=never . ' .. drive),
+            name = 'Change Directory (' .. drive .. ')',
             choose = function(item)
                 if item then
-                    vim.cmd('cd ' .. item)
+                    vim.cmd('cd ' .. vim.fn.fnameescape(item))
                     print('CWD changed to: ' .. vim.fn.getcwd())
+
                     vim.cmd 'silent! bufdo bwipeout!'
                     _G.term_win = nil
                     _G.term_buf = nil
@@ -271,7 +266,7 @@ function PickChangeDirectory()
                 end
             end,
         },
-    }
+    })
 end
 
 vim.keymap.set('n', '<leader>sf', ':Pick files<cr>')
