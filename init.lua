@@ -245,14 +245,42 @@ function Format()
     require('conform').format { async = true, lsp_format = 'fallback' }
 end
 
+function GenerateFdCache()
+    local cwd = vim.fn.getcwd()
+    local drive = cwd:sub(1, 1) or '/'
+    local cache_file = vim.fn.expand('~/.fd_cache_' .. drive .. '.txt')
+    local command_fd = { 'fd', '--type', 'd', '--hidden', '--exclude', '.git', '--color', 'never', '.', drive .. ':/' }
+    local fd_output = vim.fn.systemlist(command_fd)
+    if vim.v.shell_error ~= 0 then
+        print('Error generating fd cache: ' .. table.concat(fd_output, '\n'))
+        return
+    end
+    vim.fn.writefile(fd_output, cache_file)
+end
+
 function PickChangeDirectory()
     local pick = require 'mini.pick'
     local cwd = vim.fn.getcwd()
-    local drive = cwd:match '^%a:[\\/]' or '/'
-    local command_fd = { 'fd', '--type', 'd', '--hidden', '--exclude', '.git', '--color', 'never', '.', drive }
+    local drive = cwd:sub(1, 1) or '/'
+    local cache_file = vim.fn.expand('~/.fd_cache_' .. drive .. '.txt')
 
-    pick.builtin.cli({ command = command_fd }, {
+    if (vim.fn.filereadable(cache_file)) == 0 then
+        print('Generating fd cache for drive ' .. drive .. '...')
+        GenerateFdCache()
+    else
+        local cache_mtime = vim.fn.getftime(cache_file)
+        local disk_mtime = vim.fn.getftime(drive .. ':/')
+        if cache_mtime < disk_mtime then
+            print('Regenerating fd cache for drive ' .. drive)
+            GenerateFdCache()
+        end
+    end
+
+    local cache_list = vim.fn.readfile(cache_file)
+    cache_list = cache_list or {}
+    pick.start {
         source = {
+            items = cache_list,
             name = 'Change Directory (' .. drive .. ')',
             choose = function(item)
                 if item then
@@ -266,7 +294,7 @@ function PickChangeDirectory()
                 end
             end,
         },
-    })
+    }
 end
 
 vim.keymap.set('n', '<leader>sf', ':Pick files<cr>')
