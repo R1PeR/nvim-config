@@ -243,6 +243,7 @@ require('mini.pick').setup {
         end,
     },
 }
+
 function Format()
     require('conform').format { async = true, lsp_format = 'fallback' }
 end
