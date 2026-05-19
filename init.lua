@@ -1,3 +1,4 @@
+require('vim._core.ui2').enable { enable = true }
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -52,9 +53,22 @@ vim.opt.timeoutlen = 300
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.iskeyword:remove '_'
-vim.opt.wildoptions:append 'fuzzy'
-vim.opt.autocomplete = true
-vim.opt.autocompletedelay = 500
+
+vim.opt.completeopt = { 'menu', 'menuone', 'noselect', 'popup' }
+vim.opt.autocomplete = false
+vim.opt.autocompletedelay = 250
+
+vim.opt.wildoptions = 'fuzzy,pum'
+vim.opt.wildmode = 'longest:full,full'
+vim.opt.wildignore:append {
+    '*/node_modules/*',
+    '*/.git/*',
+    '*/.vscode/*',
+    '*/dist/*',
+    '*.o',
+    '*.obj',
+    '*.d',
+}
 
 vim.schedule(function()
     vim.opt.clipboard = 'unnamedplus'
@@ -65,23 +79,12 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 vim.opt.inccommand = 'split'
 
-vim.opt.wildignore:append {
-    '*/node_modules/*',
-    '*/.git/*',
-    '*/.vscode/*',
-    '*/build/*',
-    '*/dist/*',
-    '*.o',
-    '*.obj',
-    '*.d',
-}
-
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>')
 
 vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight when yanking (copying) text',
-    group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+    group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
     callback = function()
         vim.highlight.on_yank()
     end,
@@ -99,11 +102,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(ev)
         local client = vim.lsp.get_client_by_id(ev.data.client_id)
         if client:supports_method 'textDocument/completion' then
-            vim.lsp.completion.enable(false, client.id, ev.buf, { autotrigger = true })
+            vim.lsp.completion.enable(true, client.id, ev.buf)
         end
     end,
 })
-
 vim.diagnostic.config {
     virtual_text = { current_line = true },
 }
