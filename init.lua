@@ -141,16 +141,35 @@ local term_buf = nil
 local term_win = nil
 
 function ToggleTerminal()
+    -- Case 1: The terminal window is currently open and valid
     if term_win and vim.api.nvim_win_is_valid(term_win) then
-        vim.api.nvim_win_hide(term_win)
-        term_win = nil
-    else
-        if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
-            vim.cmd('botright sbuf ' .. term_buf)
+        -- If we are currently inside the terminal window, just hide it
+        if vim.api.nvim_get_current_win() == term_win then
+            vim.api.nvim_win_hide(term_win)
+            term_win = nil
         else
+            -- If we are in a different window, jump INTO the terminal window
+            vim.api.nvim_set_current_win(term_win)
+            vim.cmd 'startinsert'
+        end
+    else
+        -- Case 2: Window is not open. Check if we have an existing, valid terminal buffer
+        if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+            -- Check if the buffer is actually still a terminal (hasn't been exited)
+            if vim.bo[term_buf].buftype == 'terminal' then
+                vim.cmd('botright sbuf ' .. term_buf)
+            else
+                -- The shell process exited inside the buffer; spawn a new one
+                vim.cmd 'botright split | term'
+                term_buf = vim.api.nvim_get_current_buf()
+            end
+        else
+            -- Case 3: No valid buffer exists at all, create a brand new one
             vim.cmd 'botright split | term'
             term_buf = vim.api.nvim_get_current_buf()
         end
+
+        -- Track the newly opened window and drop into insert mode
         term_win = vim.api.nvim_get_current_win()
         vim.cmd 'startinsert'
     end
