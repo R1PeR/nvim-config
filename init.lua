@@ -270,6 +270,7 @@ end
 function GenerateFdCache()
     local cwd = vim.fn.getcwd()
     local drive = cwd:sub(1, 1) or '/'
+    print('Regenerating fd cache for drive ' .. drive)
     local cache_file = vim.fn.expand('~/.fd_cache_' .. drive .. '.txt')
     local command_fd = { 'fd', '--type', 'd', '--hidden', '--exclude', '.git', '--color', 'never', '.', drive .. ':/' }
     local fd_output = vim.fn.systemlist(command_fd)
@@ -279,6 +280,8 @@ function GenerateFdCache()
     end
     vim.fn.writefile(fd_output, cache_file)
 end
+
+vim.api.nvim_create_user_command('FDCache', GenerateFdCache, {})
 
 function PickChangeDirectory()
     local pick = require 'mini.pick'
@@ -293,7 +296,6 @@ function PickChangeDirectory()
         local cache_mtime = vim.fn.getftime(cache_file)
         local disk_mtime = vim.fn.getftime(drive .. ':/')
         if cache_mtime < disk_mtime then
-            print('Regenerating fd cache for drive ' .. drive)
             GenerateFdCache()
         end
     end
