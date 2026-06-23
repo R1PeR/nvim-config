@@ -190,6 +190,7 @@ vim.pack.add {
     'https://github.com/nvim-mini/mini.pairs',
     'https://github.com/nvim-mini/mini.pick',
     'https://github.com/nvim-mini/mini.move',
+    'https://github.com/MeanderingProgrammer/render-markdown.nvim',
 }
 
 require('oil').setup {
