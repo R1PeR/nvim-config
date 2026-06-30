@@ -54,7 +54,7 @@ vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.iskeyword:remove '_'
 
-vim.opt.completeopt = { 'menu', 'menuone', 'noselect', 'popup' }
+vim.opt.completeopt = {'fuzzy', 'menu', 'menuone', 'noinsert', 'popup', 'preview' }
 vim.opt.autocomplete = false
 vim.opt.autocompletedelay = 250
 
