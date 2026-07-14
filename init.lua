@@ -200,6 +200,11 @@ vim.pack.add {
     'https://github.com/vim-scripts/cobalt-colour-scheme',
     'https://github.com/nelstrom/vim-mac-classic-theme',
     'https://github.com/croaker/mustang-vim',
+    'https://github.com/kbraggins/duskhaven.nvim',
+    'https://github.com/54l1m/oshen.nvim',
+    'https://github.com/ericdwhite/overtones.nvim',
+    'https://github.com/felipeizolan/lipoide.nvim',
+    'https://github.com/bhrown/brown.vim',
 }
 
 require('oil').setup {
@@ -366,12 +371,12 @@ local colors = vim.fn.getcompletion('', 'color')
 local size = #colors
 function scrollColorScheme(delta)
     currentColorIndex = currentColorIndex + delta
-    if(currentColorIndex < 1) then
+    if currentColorIndex < 1 then
         currentColorIndex = 1
-    elseif(currentColorIndex >= size) then
+    elseif currentColorIndex >= size then
         currentColorIndex = size
     end
-    vim.cmd('set background=dark')
+    vim.cmd 'set background=dark'
     vim.cmd('colorscheme ' .. colors[currentColorIndex])
     print('Color scheme changed to: ' .. colors[currentColorIndex] .. ' (' .. currentColorIndex .. '/' .. size .. ')')
 end
