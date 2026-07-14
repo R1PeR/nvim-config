@@ -9,7 +9,7 @@ vim.g.have_nerd_font = true
 vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
 vim.g.neovide_cursor_animation_length = 0
-vim.o.guifont = 'MartianMono Nerd Font:h11'
+vim.o.guifont = '0xProto Nerd Font:h11'
 vim.g.neovide_scroll_animation_length = 0.1
 
 vim.opt.number = true
@@ -54,7 +54,7 @@ vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.iskeyword:remove '_'
 
-vim.opt.completeopt = {'fuzzy', 'menu', 'menuone', 'noinsert', 'popup', 'preview' }
+vim.opt.completeopt = { 'fuzzy', 'menu', 'menuone', 'noinsert', 'popup', 'preview' }
 vim.opt.autocomplete = false
 vim.opt.autocompletedelay = 250
 
@@ -191,6 +191,15 @@ vim.pack.add {
     'https://github.com/nvim-mini/mini.pick',
     'https://github.com/nvim-mini/mini.move',
     'https://github.com/MeanderingProgrammer/render-markdown.nvim',
+    'https://github.com/karoliskoncevicius/distilled-vim',
+    'https://github.com/letorbi/vim-colors-modern-borland',
+    'https://github.com/oneslash/helix-nvim',
+    'https://github.com/zekzekus/menguless',
+    'https://github.com/wurli/cobalt.nvim',
+    'https://github.com/devbydaniel/houston.nvim',
+    'https://github.com/vim-scripts/cobalt-colour-scheme',
+    'https://github.com/nelstrom/vim-mac-classic-theme',
+    'https://github.com/croaker/mustang-vim',
 }
 
 require('oil').setup {
@@ -332,7 +341,7 @@ vim.keymap.set('n', '<leader>t', ToggleTerminal)
 vim.keymap.set('n', '<leader>f', Format)
 vim.keymap.set('v', '<leader>f', Format)
 
-vim.cmd.colorscheme 'catppuccin'
+vim.cmd.colorscheme 'houston'
 vim.opt.background = 'dark'
 
 function getMode()
@@ -350,6 +359,21 @@ function getMode()
         ['t'] = 'TERMINAL',
     }
     return mode_map[mode] or mode
+end
+
+local currentColorIndex = 1
+local colors = vim.fn.getcompletion('', 'color')
+local size = #colors
+function scrollColorScheme(delta)
+    currentColorIndex = currentColorIndex + delta
+    if(currentColorIndex < 1) then
+        currentColorIndex = 1
+    elseif(currentColorIndex >= size) then
+        currentColorIndex = size
+    end
+    vim.cmd('set background=dark')
+    vim.cmd('colorscheme ' .. colors[currentColorIndex])
+    print('Color scheme changed to: ' .. colors[currentColorIndex] .. ' (' .. currentColorIndex .. '/' .. size .. ')')
 end
 
 vim.opt.statusline = '[%{%v:lua.getMode()%}] [%n] %f %m %r'
@@ -370,7 +394,7 @@ vim.keymap.set('n', '<c-down>', '<c-d>')
 local fontSize = 11
 function adjustFontSize(delta)
     fontSize = fontSize + delta
-    vim.opt.guifont = 'MartianMono Nerd Font:h' .. fontSize
+    vim.opt.guifont = '0xProto Nerd Font:h' .. fontSize
 end
 
 vim.keymap.set('n', '<PageDown>', function()
@@ -378,4 +402,10 @@ vim.keymap.set('n', '<PageDown>', function()
 end)
 vim.keymap.set('n', '<PageUp>', function()
     adjustFontSize(-1)
+end)
+vim.keymap.set('n', '<Home>', function()
+    scrollColorScheme(1)
+end)
+vim.keymap.set('n', '<End>', function()
+    scrollColorScheme(-1)
 end)
