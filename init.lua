@@ -204,6 +204,7 @@ vim.pack.add {
     'https://github.com/ericdwhite/overtones.nvim',
     'https://github.com/felipeizolan/lipoide.nvim',
     'https://github.com/bhrown/brown.vim',
+    'https://github.com/nlknguyen/papercolor-theme',
 }
 
 require('oil').setup {
@@ -266,52 +267,47 @@ function Format()
     require('conform').format { async = true, lsp_format = 'fallback' }
 end
 
-function GenerateFdCache()
-    local cwd = vim.fn.getcwd()
-    local drive = cwd:sub(1, 1) or '/'
-    print('Regenerating fd cache for drive ' .. drive)
-    local cache_file = vim.fn.expand('~/.fd_cache_' .. drive .. '.txt')
-    local command_fd = { 'fd', '--type', 'd', '--hidden', '--exclude', '.git', '--color', 'never', '.', drive .. ':/' }
-    local fd_output = vim.fn.systemlist(command_fd)
-    if vim.v.shell_error ~= 0 then
-        print('Error generating fd cache: ' .. table.concat(fd_output, '\n'))
-        return
-    end
-    vim.fn.writefile(fd_output, cache_file)
-end
-
-vim.api.nvim_create_user_command('FDCache', GenerateFdCache, {})
-
 function PickChangeDirectory()
     local refer = require 'refer'
     local cwd = vim.fn.getcwd()
-    local drive = cwd:sub(1, 1) or '/'
-    local cache_file = vim.fn.expand('~/.fd_cache_' .. drive .. '.txt')
+    
+    local drive_root = cwd:match("^%a:") and (cwd:sub(1, 2) .. "\\") or "/"
 
-    if (vim.fn.filereadable(cache_file)) == 0 then
-        print('Generating fd cache for drive ' .. drive .. '...')
-        GenerateFdCache()
-    else
-        local cache_mtime = vim.fn.getftime(cache_file)
-        local disk_mtime = vim.fn.getftime(drive .. ':/')
-        if cache_mtime < disk_mtime then
-            GenerateFdCache()
+    refer.pick_async(function(query)
+        return { 
+            'fd', 
+            '--type', 'd', 
+            '--absolute-path', 
+            '--color', 'never', 
+            query,
+            drive_root
+        }
+    end, function(selection)
+        if selection and selection ~= "" then
+            local ok, err = pcall(vim.api.nvim_set_current_dir, selection)
+            if ok then
+                print('CWD changed to: ' .. vim.fn.getcwd())
+                -- Wrap the UI destruction in vim.schedule to let trailing 
+                -- async timer ticks clear out safely before the buffer vanishes
+                vim.schedule(function()
+                    vim.cmd 'silent! bufdo bwipeout!'
+                    _G.term_win = nil
+                    _G.term_buf = nil
+                    vim.cmd 'enew'
+                end)
+            else
+                print('Failed to change directory: ' .. tostring(err))
+            end
         end
-    end
-
-    local cache_list = vim.fn.readfile(cache_file)
-    cache_list = cache_list or {}
-    refer.pick(cache_list, function(item)
-        if item then
-            vim.cmd('cd ' .. vim.fn.fnameescape(item))
-            print('CWD changed to: ' .. vim.fn.getcwd())
-
-            vim.cmd 'silent! bufdo bwipeout!'
-            _G.term_win = nil
-            _G.term_buf = nil
-            vim.cmd 'enew'
-        end
-    end)
+    end, { 
+        prompt = 'Change Directory (' .. drive_root .. '): ', 
+        multi_select = false, 
+        sort = true,
+        debounce_ms = 50, -- Adjusts async engine timing layout to prevent race conditions
+        keymaps = {
+            ["<CR>"] = "select_entry"
+        }
+    })
 end
 
 vim.keymap.set('n', '<leader>sf', ':Refer Files<cr>')
@@ -324,7 +320,7 @@ vim.keymap.set('n', '<leader>t', ToggleTerminal)
 vim.keymap.set('n', '<leader>f', Format)
 vim.keymap.set('v', '<leader>f', Format)
 
-vim.cmd.colorscheme 'houston'
+vim.cmd.colorscheme 'PaperColor'
 vim.opt.background = 'dark'
 
 function getMode()
