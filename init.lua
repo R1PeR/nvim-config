@@ -184,12 +184,11 @@ vim.pack.add {
         version = 'v1.52.0',
     },
     'https://github.com/nvim-treesitter/nvim-treesitter',
-    'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/pogyomo/winresize.nvim',
     'https://github.com/nvim-mini/mini.surround',
     'https://github.com/nvim-mini/mini.pairs',
-    'https://github.com/nvim-mini/mini.pick',
     'https://github.com/nvim-mini/mini.move',
+    'https://github.com/juniorsundar/refer.nvim',
     'https://github.com/MeanderingProgrammer/render-markdown.nvim',
     'https://github.com/karoliskoncevicius/distilled-vim',
     'https://github.com/letorbi/vim-colors-modern-borland',
@@ -238,16 +237,6 @@ require('nvim-treesitter').setup {
     indent = { enable = false },
 }
 
-require('fzf-lua').setup {
-    winopts = {
-        height = 0.30, -- 30% screen height
-        width = 1.00, -- Full width
-        row = 1.00, -- Stick to bottom
-        col = 0.00,
-        preview = { hidden = true }, -- Disable preview window
-    },
-}
-
 require('mini.move').setup {
     mappings = {
         left = '<M-Left>',
@@ -263,20 +252,9 @@ require('mini.move').setup {
 
 require('mini.surround').setup()
 require('mini.pairs').setup()
-require('mini.pick').setup {
-    window = {
-        config = function()
-            local height = math.floor(vim.o.lines / 2)
-            return {
-                anchor = 'NW',
-                height = height,
-                width = vim.o.columns,
-                row = vim.o.lines - height - 2,
-                col = 0,
-            }
-        end,
-    },
-}
+
+require('refer').setup {}
+require('refer').setup_ui_select {}
 
 function Format()
     require('conform').format { async = true, lsp_format = 'fallback' }
@@ -299,7 +277,7 @@ end
 vim.api.nvim_create_user_command('FDCache', GenerateFdCache, {})
 
 function PickChangeDirectory()
-    local pick = require 'mini.pick'
+    local refer = require 'refer'
     local cwd = vim.fn.getcwd()
     local drive = cwd:sub(1, 1) or '/'
     local cache_file = vim.fn.expand('~/.fd_cache_' .. drive .. '.txt')
@@ -317,29 +295,23 @@ function PickChangeDirectory()
 
     local cache_list = vim.fn.readfile(cache_file)
     cache_list = cache_list or {}
-    pick.start {
-        source = {
-            items = cache_list,
-            name = 'Change Directory (' .. drive .. ')',
-            choose = function(item)
-                if item then
-                    vim.cmd('cd ' .. vim.fn.fnameescape(item))
-                    print('CWD changed to: ' .. vim.fn.getcwd())
+    refer.pick(cache_list, function(item)
+        if item then
+            vim.cmd('cd ' .. vim.fn.fnameescape(item))
+            print('CWD changed to: ' .. vim.fn.getcwd())
 
-                    vim.cmd 'silent! bufdo bwipeout!'
-                    _G.term_win = nil
-                    _G.term_buf = nil
-                    vim.cmd 'enew'
-                end
-            end,
-        },
-    }
+            vim.cmd 'silent! bufdo bwipeout!'
+            _G.term_win = nil
+            _G.term_buf = nil
+            vim.cmd 'enew'
+        end
+    end)
 end
 
-vim.keymap.set('n', '<leader>sf', ':Pick files<cr>')
-vim.keymap.set('n', '<leader>sg', ':Pick grep_live<cr>')
+vim.keymap.set('n', '<leader>sf', ':Refer Files<cr>')
+vim.keymap.set('n', '<leader>sg', ':Refer Grep<cr>')
 vim.keymap.set('n', '<leader>c', PickChangeDirectory)
-vim.keymap.set('n', '<leader><leader>', ':Pick buffers<cr>')
+vim.keymap.set('n', '<leader><leader>', ':Refer Buffers<cr>')
 vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 vim.keymap.set('n', '<leader>g', ':Git<cr>')
 vim.keymap.set('n', '<leader>t', ToggleTerminal)
