@@ -253,7 +253,13 @@ require('mini.move').setup {
 require('mini.surround').setup()
 require('mini.pairs').setup()
 
-require('refer').setup {}
+require('refer').setup {
+    debounce_ms = 25,
+    preview = {
+        enabled = false,
+        max_lines = 1000,
+    },
+}
 require('refer').setup_ui_select {}
 
 function Format()
