@@ -188,6 +188,7 @@ vim.pack.add {
     'https://github.com/nvim-mini/mini.surround',
     'https://github.com/nvim-mini/mini.pairs',
     'https://github.com/nvim-mini/mini.move',
+    'https://github.com/nvim-mini/mini.fuzzy',
     'https://github.com/juniorsundar/refer.nvim',
     'https://github.com/MeanderingProgrammer/render-markdown.nvim',
     'https://github.com/karoliskoncevicius/distilled-vim',
@@ -260,6 +261,7 @@ require('refer').setup {
         enabled = false,
         max_lines = 1000,
     },
+    default_sorter = 'mini',
 }
 require('refer').setup_ui_select {}
 
@@ -270,44 +272,77 @@ end
 function PickChangeDirectory()
     local refer = require 'refer'
     local cwd = vim.fn.getcwd()
-    
-    local drive_root = cwd:match("^%a:") and (cwd:sub(1, 2) .. "\\") or "/"
 
-    refer.pick_async(function(query)
-        return { 
-            'fd', 
-            '--type', 'd', 
-            '--absolute-path', 
-            '--color', 'never', 
-            query,
-            drive_root
-        }
-    end, function(selection)
-        if selection and selection ~= "" then
-            local ok, err = pcall(vim.api.nvim_set_current_dir, selection)
-            if ok then
-                print('CWD changed to: ' .. vim.fn.getcwd())
-                -- Wrap the UI destruction in vim.schedule to let trailing 
-                -- async timer ticks clear out safely before the buffer vanishes
-                vim.schedule(function()
-                    vim.cmd 'silent! bufdo bwipeout!'
-                    _G.term_win = nil
-                    _G.term_buf = nil
-                    vim.cmd 'enew'
-                end)
-            else
-                print('Failed to change directory: ' .. tostring(err))
-            end
+    -- Determine drive root
+    local drive_root = cwd:match '^%a:' and (cwd:sub(1, 2) .. '\\') or '/'
+
+    local command = {
+        'fd',
+        '--type',
+        'd',
+        '--absolute-path',
+        '--color',
+        'never',
+        '--exclude',
+        '.git',
+        '--exclude',
+        'node_modules',
+        '--exclude',
+        'dist',
+        '--exclude',
+        'THUMB*',
+        '--exclude',
+        'Windows*',
+        '--exclude',
+        'Microsoft*',
+        '--hidden',
+        '--exclude',
+        'msys64*',
+        '',
+        drive_root, -- Removed the trailing empty string ''
+    }
+
+    vim.system(command, { text = true }, function(obj)
+        if obj.code ~= 0 then
+            -- Errors printed from a background thread must be scheduled
+            vim.schedule(function()
+                print('Error executing fd command: ' .. (obj.stderr or ''))
+            end)
+            return
         end
-    end, { 
-        prompt = 'Change Directory (' .. drive_root .. '): ', 
-        multi_select = false, 
-        sort = true,
-        debounce_ms = 50, -- Adjusts async engine timing layout to prevent race conditions
-        keymaps = {
-            ["<CR>"] = "select_entry"
-        }
-    })
+
+        -- SPLIT stdout by newline into a clean Lua list
+        local directories = vim.split(obj.stdout, '\n', { trimempty = true })
+
+        -- Open the picker on Neovim's main thread
+        vim.schedule(function()
+            refer.pick(directories, function(selection)
+                if selection and selection ~= '' then
+                    local ok, err = pcall(vim.api.nvim_set_current_dir, selection)
+                    if ok then
+                        print('CWD changed to: ' .. vim.fn.getcwd())
+                        -- Wipeout buffers and reset
+                        vim.schedule(function()
+                            vim.cmd 'silent! bufdo bwipeout!'
+                            _G.term_win = nil
+                            _G.term_buf = nil
+                            vim.cmd 'enew'
+                        end)
+                    else
+                        print('Failed to change directory: ' .. tostring(err))
+                    end
+                end
+            end, {
+                prompt = 'Change Directory (' .. drive_root .. '): ',
+                multi_select = false,
+                sort = true,
+                debounce_ms = 50,
+                keymaps = {
+                    ['<CR>'] = 'select_entry',
+                },
+            })
+        end)
+    end)
 end
 
 vim.keymap.set('n', '<leader>sf', ':Refer Files<cr>')
@@ -320,7 +355,7 @@ vim.keymap.set('n', '<leader>t', ToggleTerminal)
 vim.keymap.set('n', '<leader>f', Format)
 vim.keymap.set('v', '<leader>f', Format)
 
-vim.cmd.colorscheme 'PaperColor'
+vim.cmd.colorscheme 'catppuccin'
 vim.opt.background = 'dark'
 
 function getMode()
