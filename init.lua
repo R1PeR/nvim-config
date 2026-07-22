@@ -321,7 +321,7 @@ vim.keymap.set('n', '<leader>t', ToggleTerminal)
 vim.keymap.set('n', '<leader>f', Format)
 vim.keymap.set('v', '<leader>f', Format)
 
-vim.cmd.colorscheme 'catppuccin'
+vim.cmd.colorscheme 'kanagawa'
 vim.opt.background = 'dark'
 
 function getMode()
