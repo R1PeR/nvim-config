@@ -9,7 +9,7 @@ vim.g.have_nerd_font = true
 vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
 vim.g.neovide_cursor_animation_length = 0
-vim.o.guifont = '0xProto Nerd Font:h11'
+vim.o.guifont = '0xProto Nerd Font Mono:h11'
 vim.g.neovide_scroll_animation_length = 0.1
 
 vim.opt.number = true
@@ -196,15 +196,15 @@ vim.pack.add {
     'https://github.com/rose-pine/neovim',
     'https://github.com/sainnhe/everforest',
     'https://github.com/sainnhe/gruvbox-material',
-    'https://github.com/sainnhe/sonokai'
+    'https://github.com/sainnhe/sonokai',
 }
 
-local telescope = require('telescope')
-telescope.setup({
-  defaults = {
-    file_ignore_patterns = { "node_modules", ".git/" },
-  },
-})
+local telescope = require 'telescope'
+telescope.setup {
+    defaults = {
+        file_ignore_patterns = { 'node_modules', '.git/' },
+    },
+}
 
 require('oil').setup {
     view_options = {
@@ -258,28 +258,37 @@ function Format()
 end
 
 local function PickChangeDirectory()
-    local builtin = require('telescope.builtin')
-    local actions = require('telescope.actions')
-    local action_state = require('telescope.actions.state')
+    local builtin = require 'telescope.builtin'
+    local actions = require 'telescope.actions'
+    local action_state = require 'telescope.actions.state'
 
     local cwd = vim.fn.getcwd()
-    local drive_root = cwd:match('^%a:') and (cwd:sub(1, 2) .. '\\') or '/'
+    local drive_root = cwd:match '^%a:' and (cwd:sub(1, 2) .. '\\') or '/'
 
-    builtin.find_files({
+    builtin.find_files {
         prompt_title = 'Change Directory (' .. drive_root .. ')',
         cwd = drive_root,
         find_command = {
             'fd',
-            '--type', 'd',
-            '--color', 'never',
+            '--type',
+            'd',
+            '--color',
+            'never',
             '--hidden',
-            '--exclude', '.git',
-            '--exclude', 'node_modules',
-            '--exclude', 'dist',
-            '--exclude', 'THUMB*',
-            '--exclude', 'Windows*',
-            '--exclude', 'Microsoft*',
-            '--exclude', 'msys64*',
+            '--exclude',
+            '.git',
+            '--exclude',
+            'node_modules',
+            '--exclude',
+            'dist',
+            '--exclude',
+            'THUMB*',
+            '--exclude',
+            'Windows*',
+            '--exclude',
+            'Microsoft*',
+            '--exclude',
+            'msys64*',
         },
         attach_mappings = function(prompt_bufnr, map)
             actions.select_default:replace(function()
@@ -289,16 +298,16 @@ local function PickChangeDirectory()
                 if selection then
                     -- Telescope path is relative to cwd (drive_root)
                     local selected_dir = drive_root .. selection[1]
-                    
+
                     local ok, err = pcall(vim.api.nvim_set_current_dir, selected_dir)
                     if ok then
                         print('CWD changed to: ' .. vim.fn.getcwd())
                         -- Wipeout buffers and reset
                         vim.schedule(function()
-                            vim.cmd('silent! bufdo bwipeout!')
+                            vim.cmd 'silent! bufdo bwipeout!'
                             _G.term_win = nil
                             _G.term_buf = nil
-                            vim.cmd('enew')
+                            vim.cmd 'enew'
                         end)
                     else
                         print('Failed to change directory: ' .. tostring(err))
@@ -308,7 +317,7 @@ local function PickChangeDirectory()
 
             return true
         end,
-    })
+    }
 end
 
 vim.keymap.set('n', '<leader>sf', ':Telescope find_files<cr>')
@@ -374,7 +383,7 @@ vim.keymap.set('n', '<c-down>', '<c-d>')
 local fontSize = 11
 function adjustFontSize(delta)
     fontSize = fontSize + delta
-    vim.opt.guifont = '0xProto Nerd Font:h' .. fontSize
+    vim.opt.guifont = '0xProto Nerd Font Mono:h' .. fontSize
 end
 
 vim.keymap.set('n', '<PageDown>', function()
