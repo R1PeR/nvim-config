@@ -188,25 +188,23 @@ vim.pack.add {
     'https://github.com/nvim-mini/mini.surround',
     'https://github.com/nvim-mini/mini.pairs',
     'https://github.com/nvim-mini/mini.move',
-    'https://github.com/nvim-mini/mini.fuzzy',
-    'https://github.com/juniorsundar/refer.nvim',
     'https://github.com/MeanderingProgrammer/render-markdown.nvim',
-    'https://github.com/karoliskoncevicius/distilled-vim',
-    'https://github.com/letorbi/vim-colors-modern-borland',
-    'https://github.com/oneslash/helix-nvim',
-    'https://github.com/zekzekus/menguless',
-    'https://github.com/wurli/cobalt.nvim',
-    'https://github.com/devbydaniel/houston.nvim',
-    'https://github.com/vim-scripts/cobalt-colour-scheme',
-    'https://github.com/nelstrom/vim-mac-classic-theme',
-    'https://github.com/croaker/mustang-vim',
-    'https://github.com/kbraggins/duskhaven.nvim',
-    'https://github.com/54l1m/oshen.nvim',
-    'https://github.com/ericdwhite/overtones.nvim',
-    'https://github.com/felipeizolan/lipoide.nvim',
-    'https://github.com/bhrown/brown.vim',
-    'https://github.com/nlknguyen/papercolor-theme',
+    'https://github.com/nvim-lua/plenary.nvim',
+    'https://github.com/nvim-telescope/telescope.nvim',
+    'https://github.com/folke/tokyonight.nvim',
+    'https://github.com/rebelot/kanagawa.nvim',
+    'https://github.com/rose-pine/neovim',
+    'https://github.com/sainnhe/everforest',
+    'https://github.com/sainnhe/gruvbox-material',
+    'https://github.com/sainnhe/sonokai'
 }
+
+local telescope = require('telescope')
+telescope.setup({
+  defaults = {
+    file_ignore_patterns = { "node_modules", ".git/" },
+  },
+})
 
 require('oil').setup {
     view_options = {
@@ -255,100 +253,68 @@ require('mini.move').setup {
 require('mini.surround').setup()
 require('mini.pairs').setup()
 
-require('refer').setup {
-    debounce_ms = 25,
-    preview = {
-        enabled = false,
-        max_lines = 1000,
-    },
-    default_sorter = 'mini',
-}
-require('refer').setup_ui_select {}
-
 function Format()
     require('conform').format { async = true, lsp_format = 'fallback' }
 end
 
-function PickChangeDirectory()
-    local refer = require 'refer'
+local function PickChangeDirectory()
+    local builtin = require('telescope.builtin')
+    local actions = require('telescope.actions')
+    local action_state = require('telescope.actions.state')
+
     local cwd = vim.fn.getcwd()
+    local drive_root = cwd:match('^%a:') and (cwd:sub(1, 2) .. '\\') or '/'
 
-    -- Determine drive root
-    local drive_root = cwd:match '^%a:' and (cwd:sub(1, 2) .. '\\') or '/'
+    builtin.find_files({
+        prompt_title = 'Change Directory (' .. drive_root .. ')',
+        cwd = drive_root,
+        find_command = {
+            'fd',
+            '--type', 'd',
+            '--color', 'never',
+            '--hidden',
+            '--exclude', '.git',
+            '--exclude', 'node_modules',
+            '--exclude', 'dist',
+            '--exclude', 'THUMB*',
+            '--exclude', 'Windows*',
+            '--exclude', 'Microsoft*',
+            '--exclude', 'msys64*',
+        },
+        attach_mappings = function(prompt_bufnr, map)
+            actions.select_default:replace(function()
+                local selection = action_state.get_selected_entry()
+                actions.close(prompt_bufnr)
 
-    local command = {
-        'fd',
-        '--type',
-        'd',
-        '--absolute-path',
-        '--color',
-        'never',
-        '--exclude',
-        '.git',
-        '--exclude',
-        'node_modules',
-        '--exclude',
-        'dist',
-        '--exclude',
-        'THUMB*',
-        '--exclude',
-        'Windows*',
-        '--exclude',
-        'Microsoft*',
-        '--hidden',
-        '--exclude',
-        'msys64*',
-        '',
-        drive_root, -- Removed the trailing empty string ''
-    }
-
-    vim.system(command, { text = true }, function(obj)
-        if obj.code ~= 0 then
-            -- Errors printed from a background thread must be scheduled
-            vim.schedule(function()
-                print('Error executing fd command: ' .. (obj.stderr or ''))
-            end)
-            return
-        end
-
-        -- SPLIT stdout by newline into a clean Lua list
-        local directories = vim.split(obj.stdout, '\n', { trimempty = true })
-
-        -- Open the picker on Neovim's main thread
-        vim.schedule(function()
-            refer.pick(directories, function(selection)
-                if selection and selection ~= '' then
-                    local ok, err = pcall(vim.api.nvim_set_current_dir, selection)
+                if selection then
+                    -- Telescope path is relative to cwd (drive_root)
+                    local selected_dir = drive_root .. selection[1]
+                    
+                    local ok, err = pcall(vim.api.nvim_set_current_dir, selected_dir)
                     if ok then
                         print('CWD changed to: ' .. vim.fn.getcwd())
                         -- Wipeout buffers and reset
                         vim.schedule(function()
-                            vim.cmd 'silent! bufdo bwipeout!'
+                            vim.cmd('silent! bufdo bwipeout!')
                             _G.term_win = nil
                             _G.term_buf = nil
-                            vim.cmd 'enew'
+                            vim.cmd('enew')
                         end)
                     else
                         print('Failed to change directory: ' .. tostring(err))
                     end
                 end
-            end, {
-                prompt = 'Change Directory (' .. drive_root .. '): ',
-                multi_select = false,
-                sort = true,
-                debounce_ms = 50,
-                keymaps = {
-                    ['<CR>'] = 'select_entry',
-                },
-            })
-        end)
-    end)
+            end)
+
+            return true
+        end,
+    })
 end
 
-vim.keymap.set('n', '<leader>sf', ':Refer Files<cr>')
-vim.keymap.set('n', '<leader>sg', ':Refer Grep<cr>')
+vim.keymap.set('n', '<leader>sf', ':Telescope find_files<cr>')
+vim.keymap.set('n', '<leader>sg', ':Telescope live_grep<cr>')
 vim.keymap.set('n', '<leader>c', PickChangeDirectory)
-vim.keymap.set('n', '<leader><leader>', ':Refer Buffers<cr>')
+vim.keymap.set('n', '<leader><leader>', ':Telescope buffers<cr>')
 vim.keymap.set('n', '<leader>e', ':Oil<cr>')
 vim.keymap.set('n', '<leader>g', ':Git<cr>')
 vim.keymap.set('n', '<leader>t', ToggleTerminal)
